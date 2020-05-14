@@ -13,6 +13,8 @@ type Chart struct {
 	Start    *datetime.Datetime
 	End      *datetime.Datetime
 	Length   int
+	High     decimal.Decimal
+	Low      decimal.Decimal
 	Interval datetime.Interval
 	Bars     []*Bar
 }
@@ -35,9 +37,17 @@ func GetChart(symbol string, interval datetime.Interval, date *datetime.Datetime
 		Interval: interval,
 		Start:    datetime.FromUnix(q.Meta().CurrentTradingPeriod.Regular.Start),
 		End:      datetime.FromUnix(q.Meta().CurrentTradingPeriod.Regular.End),
+		High:     q.Bar().High,
+		Low:      q.Bar().Low,
 	}
 	for q.Next() {
 		bar := &Bar{datetime.FromUnix(q.Bar().Timestamp), q.Bar().Close}
+		if q.Bar().High.GreaterThan(chart.High) {
+			chart.High = q.Bar().High
+		}
+		if q.Bar().High.LessThan(chart.Low) {
+			chart.Low = q.Bar().Low
+		}
 		chart.Bars = append(chart.Bars, bar)
 	}
 	if len(chart.Bars) == 0 {

@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/ericm/stonks/api"
+	"github.com/ericm/stonks/graph"
 	"github.com/piquette/finance-go/datetime"
 )
 
@@ -14,5 +15,6 @@ func main() {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
-	fmt.Println(chart)
+	g, _ := graph.GenerateGraph(chart, 80, 80)
+	fmt.Print(g)
 }
