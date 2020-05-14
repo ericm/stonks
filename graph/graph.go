@@ -1,6 +1,8 @@
 package graph
 
-import "github.com/ericm/stonks/api"
+import (
+	"github.com/ericm/stonks/api"
+)
 
 func borderHorizontal(out *string, width int) {
 	for _i := 0; _i < width-2; _i++ {
