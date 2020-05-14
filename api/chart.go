@@ -20,7 +20,7 @@ type Chart struct {
 // Bar of a Chart
 type Bar struct {
 	Timestamp *datetime.Datetime
-	Curremt   decimal.Decimal
+	Current   decimal.Decimal
 }
 
 // GetChart returns a Chart
