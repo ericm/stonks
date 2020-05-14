@@ -29,9 +29,9 @@ type Bar struct {
 func GetChart(symbol string, interval datetime.Interval, date *datetime.Datetime) (*Chart, error) {
 	var q *chart.Iter
 	if date != nil {
-		q = chart.Get(&chart.Params{Symbol: "AMD", Interval: interval, Start: date})
+		q = chart.Get(&chart.Params{Symbol: symbol, Interval: interval, Start: date})
 	} else {
-		q = chart.Get(&chart.Params{Symbol: "AMD", Interval: interval})
+		q = chart.Get(&chart.Params{Symbol: symbol, Interval: interval})
 	}
 	chart := &Chart{
 		Interval: interval,
