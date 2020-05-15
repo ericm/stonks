@@ -33,14 +33,18 @@ func GetChart(symbol string, interval datetime.Interval, date *datetime.Datetime
 	} else {
 		q = chart.Get(&chart.Params{Symbol: symbol, Interval: interval})
 	}
-	chart := &Chart{
-		Interval: interval,
-		Start:    datetime.FromUnix(q.Meta().CurrentTradingPeriod.Regular.Start),
-		End:      datetime.FromUnix(q.Meta().CurrentTradingPeriod.Regular.End),
-		High:     q.Bar().High,
-		Low:      q.Bar().Low,
-	}
+	var chart *Chart
 	for q.Next() {
+		if chart == nil {
+			chart = &Chart{
+				Interval: interval,
+				Start:    datetime.FromUnix(q.Meta().CurrentTradingPeriod.Regular.Start),
+				End:      datetime.FromUnix(q.Meta().CurrentTradingPeriod.Regular.End),
+				High:     q.Bar().High,
+				Low:      q.Bar().Low,
+				Length:   q.Count(),
+			}
+		}
 		bar := &Bar{datetime.FromUnix(q.Bar().Timestamp), q.Bar().Close}
 		if q.Bar().High.GreaterThan(chart.High) {
 			chart.High = q.Bar().High
