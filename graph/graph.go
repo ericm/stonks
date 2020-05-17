@@ -1,9 +1,10 @@
 package graph
 
 import (
-	"time"
+	"fmt"
 
 	"github.com/ericm/stonks/api"
+	"github.com/shopspring/decimal"
 )
 
 func borderHorizontal(out *string, width int) {
@@ -17,16 +18,17 @@ func GenerateGraph(chart *api.Chart, width int, height int) (string, error) {
 	out := "┌"
 	borderHorizontal(&out, width)
 	out += "┐"
-	interval, err := time.ParseDuration(string(chart.Interval))
-	if err != nil {
-		return "", err
+	// interval, err := time.ParseDuration(string(chart.Interval))
+	// if err != nil {
+	// 	return "", err
+	// }
+	matrix := make([][]*api.Bar, height)
+	for i := range matrix {
+		matrix[i] = make([]*api.Bar, width)
 	}
-	count := interval.Seconds() / float64(width)
-	difference := int(interval.Seconds()) % width
-
-	curr := chart.Bars[0]
-	for y, bar := range chart.Bars[1:] {
-
+	ran := chart.High.Sub(chart.Low)
+	for _, bar := range chart.Bars {
+		fmt.Println(bar.Current.Sub(chart.Low).Div(ran).Mul(decimal.NewFromInt((int64(height)))).Floor().IntPart())
 	}
 	return out, nil
 }

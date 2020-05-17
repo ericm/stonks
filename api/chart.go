@@ -49,7 +49,7 @@ func GetChart(symbol string, interval datetime.Interval, date *datetime.Datetime
 		if q.Bar().High.GreaterThan(chart.High) {
 			chart.High = q.Bar().High
 		}
-		if q.Bar().High.LessThan(chart.Low) {
+		if q.Bar().Low.LessThan(chart.Low) {
 			chart.Low = q.Bar().Low
 		}
 		chart.Bars = append(chart.Bars, bar)
