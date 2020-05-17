@@ -23,6 +23,9 @@ type Chart struct {
 type Bar struct {
 	Timestamp *datetime.Datetime
 	Current   decimal.Decimal
+	Y,
+	Next int
+	Char string
 }
 
 // GetChart returns a Chart
@@ -45,7 +48,7 @@ func GetChart(symbol string, interval datetime.Interval, date *datetime.Datetime
 				Length:   q.Count(),
 			}
 		}
-		bar := &Bar{datetime.FromUnix(q.Bar().Timestamp), q.Bar().Close}
+		bar := &Bar{Timestamp: datetime.FromUnix(q.Bar().Timestamp), Current: q.Bar().Close}
 		if q.Bar().High.GreaterThan(chart.High) {
 			chart.High = q.Bar().High
 		}
