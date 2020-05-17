@@ -35,26 +35,58 @@ func GenerateGraph(chart *api.Chart, width int, height int) (string, error) {
 		matrix[y][x*spacing] = bar
 		bar.Y = y
 		if last != nil {
-			next := bar.Y - last.Y
+			next := last.Y - bar.Y
 			var char string
-			currY := y
+			currY := last.Y
 			switch {
 			case next > 0:
 				char = "╱"
-				for i := x; i < x*spacing; i++ {
+				bar.Char = char
+				for i := 0; i < spacing-1; i++ {
 					currY--
-					matrix[currY][x] = &api.Bar{Char: char}
+					if currY >= 0 && currY >= y {
+						matrix[currY][i+((x-1)*spacing)+1] = &api.Bar{Char: char}
+					}
 				}
 			case next < 0:
 				char = "╲"
-				for i := x; i < x*spacing; i++ {
+				bar.Char = char
+				for i := 0; i < spacing-1; i++ {
 					currY++
-					matrix[currY][x] = &api.Bar{Char: char}
+					if currY < height && currY <= y {
+						matrix[currY][i+((x-1)*spacing)+1] = &api.Bar{Char: char}
+					}
 				}
 			case next == 0:
 				char = "─"
-				for i := x; i < x*spacing; i++ {
-					matrix[currY][x] = &api.Bar{Char: char}
+				last.Char = char
+				for i := 0; i < spacing-1; i++ {
+					matrix[currY][i+((x-1)*spacing)+1] = &api.Bar{Char: char}
+				}
+			}
+			// Edge cases
+			switch last.Char {
+			case "╱":
+				switch char {
+				case "╲":
+					if matrix[y][(x*spacing)-1] != nil {
+						last.Char = "▁"
+					} else {
+						last.Char = "ʌ"
+					}
+				case "╱":
+					last.Char = "╱"
+				}
+			case "╲":
+				switch char {
+				case "╲":
+					if matrix[y][(x*spacing)-1] != nil {
+						last.Char = "▔"
+					} else {
+						last.Char = "▁"
+					}
+				case "╱":
+					last.Char = "╱"
 				}
 			}
 		}
