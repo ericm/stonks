@@ -56,7 +56,7 @@ func GetChart(symbol string, interval datetime.Interval, date *datetime.Datetime
 		}
 		chart.Bars = append(chart.Bars, bar)
 	}
-	if len(chart.Bars) == 0 {
+	if chart == nil || len(chart.Bars) == 0 {
 		return nil, fmt.Errorf("No bars were found for this time period")
 	}
 	return chart, nil

@@ -16,10 +16,6 @@ func GenerateGraph(chart *api.Chart, width int, height int) (string, error) {
 	out := "┏"
 	borderHorizontal(&out, width)
 	out += "┓"
-	// interval, err := time.ParseDuration(string(chart.Interval))
-	// if err != nil {
-	// 	return "", err
-	// }
 	matrix := make([][]*api.Bar, height)
 	for i := range matrix {
 		matrix[i] = make([]*api.Bar, width)
@@ -92,8 +88,11 @@ func GenerateGraph(chart *api.Chart, width int, height int) (string, error) {
 		}
 		last = bar
 	}
-	for _, slc := range matrix {
+	increment := ran.Div(decimal.NewFromInt(int64(height)))
+	for i, slc := range matrix {
 		out += "┃"
+		out += chart.High.Sub(increment.Mul(decimal.NewFromInt(int64(i)))).StringFixed(2)
+		out += "│"
 		for _, ptr := range slc {
 			if ptr != nil {
 				out += ptr.Char
