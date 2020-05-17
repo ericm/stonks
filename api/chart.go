@@ -23,9 +23,8 @@ type Chart struct {
 type Bar struct {
 	Timestamp *datetime.Datetime
 	Current   decimal.Decimal
-	Y,
-	Next int
-	Char string
+	Y         int
+	Char      string
 }
 
 // GetChart returns a Chart
