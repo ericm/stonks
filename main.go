@@ -15,6 +15,6 @@ func main() {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
-	g, _ := graph.GenerateGraph(chart, 80, 80)
+	g, _ := graph.GenerateGraph(chart, 80, 10)
 	fmt.Print(g)
 }

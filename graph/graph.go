@@ -1,8 +1,6 @@
 package graph
 
 import (
-	"fmt"
-
 	"github.com/ericm/stonks/api"
 	"github.com/shopspring/decimal"
 )
@@ -27,8 +25,22 @@ func GenerateGraph(chart *api.Chart, width int, height int) (string, error) {
 		matrix[i] = make([]*api.Bar, width)
 	}
 	ran := chart.High.Sub(chart.Low)
-	for _, bar := range chart.Bars {
-		fmt.Println(bar.Current.Sub(chart.Low).Div(ran).Mul(decimal.NewFromInt((int64(height)))).Floor().IntPart())
+	spacing := width / chart.Length
+	out += "\n"
+	for x, bar := range chart.Bars {
+		y := int(bar.Current.Sub(chart.Low).Div(ran).Mul(
+			decimal.NewFromInt((int64(height)))).Floor().IntPart())
+		matrix[y][x*spacing] = bar
+	}
+	for _, slc := range matrix {
+		for _, ptr := range slc {
+			if ptr != nil {
+				out += "+"
+			} else {
+				out += " "
+			}
+		}
+		out += "\n"
 	}
 	return out, nil
 }
