@@ -36,8 +36,10 @@ type Bar struct {
 // GetChart returns a Chart
 func GetChart(symbol string, interval datetime.Interval, start *datetime.Datetime, end *datetime.Datetime) (*Chart, error) {
 	q := chart.Get(&chart.Params{Symbol: symbol, Interval: interval, Start: start, End: end, IncludeExt: false})
+	if q.Count() < 3 {
+		q = chart.Get(&chart.Params{Symbol: symbol, Interval: interval, Start: start, End: end, IncludeExt: true})
+	}
 	var chart *Chart
-
 	for q.Next() {
 		if chart == nil {
 			chart = &Chart{
@@ -53,6 +55,9 @@ func GetChart(symbol string, interval datetime.Interval, start *datetime.Datetim
 			}
 		}
 		bar := &Bar{Timestamp: datetime.FromUnix(q.Bar().Timestamp), Current: q.Bar().Close}
+		if bar.Current.IsZero() {
+			continue
+		}
 		if q.Bar().High.GreaterThan(chart.High) {
 			chart.High = q.Bar().High
 		}

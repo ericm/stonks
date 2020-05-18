@@ -25,6 +25,9 @@ func GenerateGraph(chart *api.Chart, width int, height int) (string, error) {
 	borderHorizontal(&out, width+maxSize+3)
 	out += "┓"
 	colour := 92
+	if chart.Length < width/5 {
+		chart.Length = width / 3
+	}
 	if chart.Change.IsNegative() {
 		colour = 91
 	}
@@ -68,6 +71,7 @@ check:
 		}
 		matrix[y][newX] = bar
 		bar.Y = y
+		// fmt.Println(bar.Current, bar.Y)
 		if last != nil {
 			next := last.Y - bar.Y
 			var char string
@@ -160,6 +164,7 @@ incFooter:
 	if mod < 3 {
 		mod = width / 10
 	}
+	fmt.Println(mod)
 	diff := mod * spacing
 	lastLen := 0
 	for i, bar := range chart.Bars {
