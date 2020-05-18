@@ -48,7 +48,7 @@ func main() {
 			}
 		},
 	}
-	intervalCmd = rootCmd.PersistentFlags().StringP("interval", "i", "15m", "stonks -t X[m|h] (eg 15m. 5m. 1h, 1d)")
+	intervalCmd = rootCmd.PersistentFlags().StringP("interval", "i", "15m", "stonks -t X[m|h] (eg 15m, 5m, 1h, 1d)")
 	week = rootCmd.PersistentFlags().BoolP("week", "w", false, "Display the last week (will set interval to 1d)")
 	rootCmd.Execute()
 }
