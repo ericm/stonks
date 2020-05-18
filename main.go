@@ -40,7 +40,6 @@ func main() {
 					}
 					t := timex.WeekStart(year, week)
 					e := t.AddDate(0, 0, 5)
-					fmt.Println(t, e)
 					start = datetime.New(&t)
 					end = datetime.New(&e)
 				} else if intervalCmd == nil {

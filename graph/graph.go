@@ -151,16 +151,15 @@ incFooter:
 		goto incFooter
 	}
 	mod := width / chart.Length
-	if mod == 1 {
+	if mod < 3 {
 		mod = width / 10
 	}
-	fmt.Println(mod, chart.Length)
 	diff := mod * spacing
 	lastLen := 0
 	for i, bar := range chart.Bars {
 		if i%mod == 0 {
 			format := timeFormat
-			if strings.Contains(string(chart.Interval), "d") {
+			if chart.End.Day != chart.Start.Day {
 				format = dayFormat
 			}
 			t := bar.Timestamp.Time().Format(format)
