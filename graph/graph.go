@@ -164,7 +164,6 @@ incFooter:
 	if mod < 3 {
 		mod = width / 10
 	}
-	fmt.Println(mod)
 	diff := mod * spacing
 	lastLen := 0
 	for i, bar := range chart.Bars {

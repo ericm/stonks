@@ -68,9 +68,9 @@ func GetChart(symbol string, interval datetime.Interval, start *datetime.Datetim
 		chart.End = datetime.FromUnix(q.Bar().Timestamp)
 		chart.Bars = append(chart.Bars, bar)
 	}
-	chart.Change = chart.Close.Sub(chart.Open).Div(chart.Open).Mul(decimal.NewFromInt(100))
 	if chart == nil || len(chart.Bars) == 0 {
 		return nil, fmt.Errorf("No bars were found for this time period for %s", symbol)
 	}
+	chart.Change = chart.Close.Sub(chart.Open).Div(chart.Open).Mul(decimal.NewFromInt(100))
 	return chart, nil
 }

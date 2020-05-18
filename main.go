@@ -8,7 +8,6 @@ import (
 
 	"github.com/ericm/stonks/api"
 	"github.com/ericm/stonks/graph"
-	"github.com/icza/gox/timex"
 	"github.com/piquette/finance-go/datetime"
 	"github.com/spf13/cobra"
 )
@@ -30,18 +29,10 @@ func main() {
 				if *week {
 					interval = datetime.OneHour
 					rn := time.Now()
-					year, week := rn.ISOWeek()
-					if rn.Weekday() < 2 {
-						week--
-					}
-					if week < 0 {
-						week = 1
-						year--
-					}
-					t := timex.WeekStart(year, week)
-					e := t.AddDate(0, 0, 5)
-					start = datetime.New(&t)
-					end = datetime.New(&e)
+					e := rn.AddDate(0, 0, -7)
+					start = datetime.New(&e)
+					end = datetime.New(&rn)
+					fmt.Println(rn, e)
 				} else if intervalCmd == nil {
 					interval = datetime.FifteenMins
 				} else {
@@ -57,7 +48,7 @@ func main() {
 			}
 		},
 	}
-	intervalCmd = rootCmd.PersistentFlags().StringP("interval", "i", "15m", "stonks -t X[m|h]")
+	intervalCmd = rootCmd.PersistentFlags().StringP("interval", "i", "15m", "stonks -t X[m|h] (eg 15m. 5m. 1h, 1d)")
 	week = rootCmd.PersistentFlags().BoolP("week", "w", false, "Display the last week (will set interval to 1d)")
 	rootCmd.Execute()
 }
