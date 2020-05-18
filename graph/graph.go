@@ -1,6 +1,7 @@
 package graph
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/ericm/stonks/api"
@@ -29,9 +30,10 @@ func GenerateGraph(chart *api.Chart, width int, height int) (string, error) {
 	var last *api.Bar
 	for x, bar := range chart.Bars {
 		bar.Char = "─"
-		y := int(bar.Current.Sub(chart.Low).Div(ran).Mul(
+		y := height - int(bar.Current.Sub(chart.Low).Div(ran).Mul(
 			decimal.NewFromInt((int64(height)))).Floor().IntPart())
 		matrix[y][x*spacing] = bar
+		fmt.Println(bar.Current)
 		bar.Y = y
 		if last != nil {
 			next := last.Y - bar.Y
@@ -94,8 +96,14 @@ func GenerateGraph(chart *api.Chart, width int, height int) (string, error) {
 	increment := ran.Div(decimal.NewFromInt(int64(height)))
 	for i, slc := range matrix {
 		out += "┃"
-		out += chart.High.Sub(increment.Mul(decimal.NewFromInt(int64(i)))).StringFixed(2)
-		out += "│"
+		price := chart.High.Sub(increment.Mul(decimal.NewFromInt(int64(i)))).StringFixed(2)
+	checkLen:
+		if len(price) < maxSize {
+			price = " " + price
+			goto checkLen
+		}
+		out += price
+		out += "│\033[92m"
 		for _, ptr := range slc {
 			if ptr != nil {
 				out += ptr.Char
@@ -103,7 +111,7 @@ func GenerateGraph(chart *api.Chart, width int, height int) (string, error) {
 				out += " "
 			}
 		}
-		out += "┃"
+		out += "\033[0m┃"
 		out += "\n"
 	}
 	out += "┗"
