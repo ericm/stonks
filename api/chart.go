@@ -42,6 +42,9 @@ func GetChart(symbol string, interval datetime.Interval, start *datetime.Datetim
 	}
 	var chart *Chart
 	for q.Next() {
+		if end != nil && q.Bar().Timestamp > end.Unix() {
+			break
+		}
 		if chart == nil {
 			chart = &Chart{
 				Interval: interval,

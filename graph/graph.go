@@ -31,6 +31,7 @@ func GenerateGraph(chart *api.Chart, width int, height int) (string, error) {
 	if chart.Change.IsNegative() {
 		colour = 91
 	}
+	fmt.Println(chart.Start.Time(), chart.End.Time())
 	info := fmt.Sprintf(
 		"\n┃\033[95m %s | \033[%dm%s %s (%s%%)\033[95m on %s | Prev: %s | %s \033[0m",
 		chart.Ticker,
