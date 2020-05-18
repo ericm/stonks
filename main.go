@@ -13,11 +13,13 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	interval *string
+	week     *bool
+	days     *int
+)
+
 func main() {
-	var (
-		intervalCmd *string
-		week        *bool
-	)
 	viper.SetConfigFile("")
 	rootCmd := &cobra.Command{
 		Use:   "stonks",
@@ -25,21 +27,31 @@ func main() {
 		Long:  "Displays realtime stocks in graph format in a terminal",
 		Run: func(cmd *cobra.Command, args []string) {
 			for _, symbol := range args {
-				var interval datetime.Interval
+				var intervalCmd datetime.Interval
 				var start *datetime.Datetime
 				var end *datetime.Datetime
 				if *week {
-					interval = datetime.OneHour
+					intervalCmd = datetime.OneHour
 					rn := time.Now()
 					e := rn.AddDate(0, 0, -7)
 					start = datetime.New(&e)
 					end = datetime.New(&rn)
-				} else if intervalCmd == nil {
-					interval = datetime.FifteenMins
+				} else if interval == nil {
+					intervalCmd = datetime.FifteenMins
 				} else {
-					interval = datetime.Interval(*intervalCmd)
+					intervalCmd = datetime.Interval(*interval)
 				}
-				chart, err := api.GetChart(strings.ToUpper(symbol), interval, start, end)
+				if *days > 0 {
+					s := time.Now().AddDate(0, 0, *days*-1)
+					y, m, d := s.Date()
+					s = time.Date(y, m, d, 0, 0, 0, 0, s.Location())
+
+					start = datetime.New(&s)
+					e := time.Date(y, m, d, 23, 0, 0, 0, s.Location())
+					end = datetime.New(&e)
+					fmt.Println(*start.Time(), *end.Time())
+				}
+				chart, err := api.GetChart(strings.ToUpper(symbol), intervalCmd, start, end)
 				if err != nil {
 					fmt.Println(err.Error())
 					os.Exit(1)
@@ -49,7 +61,8 @@ func main() {
 			}
 		},
 	}
-	intervalCmd = rootCmd.PersistentFlags().StringP("interval", "i", "15m", "stonks -t X[m|h] (eg 15m, 5m, 1h, 1d)")
+	interval = rootCmd.PersistentFlags().StringP("interval", "i", "15m", "stonks -t X[m|h] (eg 15m, 5m, 1h, 1d)")
 	week = rootCmd.PersistentFlags().BoolP("week", "w", false, "Display the last week (will set interval to 1d)")
+	days = rootCmd.PersistentFlags().IntP("days", "d", 0, "Stocks from X number of days ago.")
 	rootCmd.Execute()
 }
