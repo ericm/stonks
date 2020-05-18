@@ -52,10 +52,14 @@ check:
 		bar.Char = "─"
 		y := height - int(bar.Current.Sub(chart.Low).Div(ran).Mul(
 			decimal.NewFromInt((int64(height)))).Floor().IntPart())
-		if y == height {
+		if y >= height {
 			y--
 		}
-		matrix[y][x*spacing] = bar
+		newX := x * spacing
+		if newX >= width {
+			newX--
+		}
+		matrix[y][newX] = bar
 		bar.Y = y
 		if last != nil {
 			next := last.Y - bar.Y

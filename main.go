@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/ericm/stonks/api"
 	"github.com/ericm/stonks/graph"
@@ -17,12 +18,12 @@ func main() {
 		Long:  "Displays realtime stocks in graph format in a terminal",
 		Run: func(cmd *cobra.Command, args []string) {
 			for _, symbol := range args {
-				chart, err := api.GetChart(symbol, datetime.FifteenMins, nil)
+				chart, err := api.GetChart(strings.ToUpper(symbol), datetime.FifteenMins, nil)
 				if err != nil {
 					fmt.Println(err.Error())
 					os.Exit(1)
 				}
-				g, _ := graph.GenerateGraph(chart, 80, 10)
+				g, _ := graph.GenerateGraph(chart, 80, 12)
 				fmt.Print(g)
 			}
 		},
