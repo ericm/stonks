@@ -9,6 +9,7 @@ import (
 )
 
 const dateFormat = "Mon 02/01/2006 15:04 GMT"
+const timeFormat = "3.04pm"
 
 func borderHorizontal(out *string, width int) {
 	for _i := 0; _i < width-2; _i++ {
@@ -23,7 +24,7 @@ func GenerateGraph(chart *api.Chart, width int, height int) (string, error) {
 	borderHorizontal(&out, width+maxSize+3)
 	out += "┓"
 	info := fmt.Sprintf(
-		"\n┃\033[95m %s  %s %s on %s  %s \033[0m",
+		"\n┃\033[95m %s - \033[92m%s %s\033[95m on %s - %s \033[0m",
 		chart.Ticker,
 		chart.Close.StringFixed(2),
 		chart.Currency,
@@ -31,7 +32,7 @@ func GenerateGraph(chart *api.Chart, width int, height int) (string, error) {
 		chart.Exchange,
 	)
 check:
-	if len(info) < width+maxSize+14 {
+	if len(info) < width+maxSize+24 {
 		info += " "
 		goto check
 	}
@@ -136,7 +137,38 @@ check:
 		out += "\033[0m┃"
 		out += "\n"
 	}
-	out += "┗"
+	out += "┣"
+	borderHorizontal(&out, width+maxSize+3)
+	out += "┫\n"
+	footer := "┃"
+incFooter:
+	if len(footer) < maxSize+4 {
+		footer += " "
+		goto incFooter
+	}
+	mod := width / chart.Length
+	diff := mod * spacing
+	lastLen := 0
+	for i, bar := range chart.Bars {
+		if i%mod == 0 {
+			t := bar.Timestamp.Time().Format(timeFormat)
+			if lastLen > 0 {
+				for _i := 0; _i < diff-len(t); _i++ {
+					footer += " "
+				}
+			}
+			footer += t
+			lastLen = len(t)
+		}
+	}
+checkFooter:
+	if len(footer) < width+maxSize+4 {
+		footer += " "
+		goto checkFooter
+	}
+	footer += "┃"
+	out += footer
+	out += "\n┗"
 	borderHorizontal(&out, width+maxSize+3)
 	out += "┛\n"
 	return out, nil
