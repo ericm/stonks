@@ -10,6 +10,7 @@ import (
 
 const dateFormat = "Mon 02/01/2006 15:04 GMT"
 const timeFormat = "3.04pm"
+const dayFormat = "2 Jan"
 
 func borderHorizontal(out *string, width int) {
 	for _i := 0; _i < width-2; _i++ {
@@ -158,7 +159,11 @@ incFooter:
 	lastLen := 0
 	for i, bar := range chart.Bars {
 		if i%mod == 0 {
-			t := bar.Timestamp.Time().Format(timeFormat)
+			format := timeFormat
+			if strings.Contains(string(chart.Interval), "d") {
+				format = dayFormat
+			}
+			t := bar.Timestamp.Time().Format(format)
 			if lastLen > 0 {
 				for _i := 0; _i < diff-len(t); _i++ {
 					footer += " "
