@@ -36,8 +36,7 @@ type Bar struct {
 // GetChart returns a Chart
 func GetChart(symbol string, interval datetime.Interval, start *datetime.Datetime, end *datetime.Datetime) (*Chart, error) {
 	q := chart.Get(&chart.Params{Symbol: symbol, Interval: interval, Start: start, End: end, IncludeExt: false})
-	fmt.Println(q.Count())
-	if q.Count() < 10 && interval == datetime.FifteenMins {
+	if q.Count() < 7 && interval == datetime.FifteenMins {
 		q = chart.Get(&chart.Params{Symbol: symbol, Interval: datetime.FiveMins, Start: start, End: end, IncludeExt: false})
 	}
 	var chart *Chart

@@ -32,7 +32,6 @@ func main() {
 					e := rn.AddDate(0, 0, -7)
 					start = datetime.New(&e)
 					end = datetime.New(&rn)
-					fmt.Println(rn, e)
 				} else if intervalCmd == nil {
 					interval = datetime.FifteenMins
 				} else {
