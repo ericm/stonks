@@ -33,13 +33,8 @@ type Bar struct {
 }
 
 // GetChart returns a Chart
-func GetChart(symbol string, interval datetime.Interval, date *datetime.Datetime) (*Chart, error) {
-	var q *chart.Iter
-	if date != nil {
-		q = chart.Get(&chart.Params{Symbol: symbol, Interval: interval, Start: date})
-	} else {
-		q = chart.Get(&chart.Params{Symbol: symbol, Interval: interval})
-	}
+func GetChart(symbol string, interval datetime.Interval, start *datetime.Datetime, end *datetime.Datetime) (*Chart, error) {
+	q := chart.Get(&chart.Params{Symbol: symbol, Interval: interval, Start: start, End: end, IncludeExt: false})
 	var chart *Chart
 
 	for q.Next() {
@@ -68,7 +63,7 @@ func GetChart(symbol string, interval datetime.Interval, date *datetime.Datetime
 		chart.Bars = append(chart.Bars, bar)
 	}
 	if chart == nil || len(chart.Bars) == 0 {
-		return nil, fmt.Errorf("No bars were found for this time period")
+		return nil, fmt.Errorf("No bars were found for this time period for %s", symbol)
 	}
 	return chart, nil
 }
