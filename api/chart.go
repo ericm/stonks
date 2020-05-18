@@ -23,6 +23,7 @@ type Chart struct {
 	Interval datetime.Interval
 	Bars     []*Bar
 	Change   decimal.Decimal
+	Prev     decimal.Decimal
 }
 
 // Bar of a Chart
@@ -73,5 +74,6 @@ func GetChart(symbol string, interval datetime.Interval, start *datetime.Datetim
 	}
 	orig := decimal.NewFromFloat(q.Meta().ChartPreviousClose)
 	chart.Change = chart.Close.Sub(orig).Div(orig).Mul(decimal.NewFromInt(100))
+	chart.Prev = orig
 	return chart, nil
 }
