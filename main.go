@@ -10,6 +10,7 @@ import (
 	"github.com/ericm/stonks/graph"
 	"github.com/piquette/finance-go/datetime"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func main() {
@@ -17,6 +18,7 @@ func main() {
 		intervalCmd *string
 		week        *bool
 	)
+	viper.SetConfigFile("")
 	rootCmd := &cobra.Command{
 		Use:   "stonks",
 		Short: "A stock visualizer",
