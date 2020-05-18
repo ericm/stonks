@@ -96,7 +96,7 @@ check:
 			case "╱":
 				switch char {
 				case "╲":
-					if matrix[y][(x*spacing)-1] != nil {
+					if newX > 0 && matrix[y][(newX)-1] != nil {
 						last.Char = "▁"
 					} else {
 						last.Char = "ʌ"
@@ -107,7 +107,7 @@ check:
 			case "╲":
 				switch char {
 				case "╲":
-					if matrix[y][(x*spacing)-1] != nil {
+					if newX > 0 && matrix[y][(newX)-1] != nil {
 						last.Char = "▔"
 					} else {
 						last.Char = "▁"
@@ -150,6 +150,10 @@ incFooter:
 		goto incFooter
 	}
 	mod := width / chart.Length
+	if mod == 1 {
+		mod = width / 10
+	}
+	fmt.Println(mod, chart.Length)
 	diff := mod * spacing
 	lastLen := 0
 	for i, bar := range chart.Bars {
