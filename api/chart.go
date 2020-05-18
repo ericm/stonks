@@ -10,11 +10,16 @@ import (
 
 // Chart used to generate graphs
 type Chart struct {
+	Ticker   string
+	Exchange string
+	Currency string
 	Start    *datetime.Datetime
 	End      *datetime.Datetime
 	Length   int
 	High     decimal.Decimal
 	Low      decimal.Decimal
+	Open     decimal.Decimal
+	Close    decimal.Decimal
 	Interval datetime.Interval
 	Bars     []*Bar
 }
@@ -36,6 +41,7 @@ func GetChart(symbol string, interval datetime.Interval, date *datetime.Datetime
 		q = chart.Get(&chart.Params{Symbol: symbol, Interval: interval})
 	}
 	var chart *Chart
+
 	for q.Next() {
 		if chart == nil {
 			chart = &Chart{
@@ -44,7 +50,11 @@ func GetChart(symbol string, interval datetime.Interval, date *datetime.Datetime
 				End:      datetime.FromUnix(q.Meta().CurrentTradingPeriod.Regular.End),
 				High:     q.Bar().High,
 				Low:      q.Bar().Low,
+				Open:     q.Bar().Open,
 				Length:   q.Count(),
+				Ticker:   symbol,
+				Exchange: q.Meta().ExchangeName,
+				Currency: q.Meta().Currency,
 			}
 		}
 		bar := &Bar{Timestamp: datetime.FromUnix(q.Bar().Timestamp), Current: q.Bar().Close}
@@ -54,6 +64,7 @@ func GetChart(symbol string, interval datetime.Interval, date *datetime.Datetime
 		if q.Bar().Low.LessThan(chart.Low) {
 			chart.Low = q.Bar().Low
 		}
+		chart.Close = q.Bar().Close
 		chart.Bars = append(chart.Bars, bar)
 	}
 	if chart == nil || len(chart.Bars) == 0 {

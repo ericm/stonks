@@ -20,6 +20,23 @@ func GenerateGraph(chart *api.Chart, width int, height int) (string, error) {
 	maxSize := len(strings.Split(chart.High.String(), ".")[0]) + 3
 	borderHorizontal(&out, width+maxSize+3)
 	out += "┓"
+	info := fmt.Sprintf(
+		"\n┃\033[95m %s  %s %s on %s  %s \033[0m",
+		chart.Ticker,
+		chart.Close.StringFixed(2),
+		chart.Currency,
+		chart.End.Time().Format("02/01/2006"),
+		chart.Exchange,
+	)
+check:
+	if len(info) < width+maxSize+14 {
+		info += " "
+		goto check
+	}
+	info += "┃\n┣"
+	out += info
+	borderHorizontal(&out, width+maxSize+3)
+	out += "┫"
 	matrix := make([][]*api.Bar, height)
 	for i := range matrix {
 		matrix[i] = make([]*api.Bar, width)
