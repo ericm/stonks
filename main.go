@@ -49,7 +49,6 @@ func main() {
 					start = datetime.New(&s)
 					e := time.Date(y, m, d, 23, 0, 0, 0, s.Location())
 					end = datetime.New(&e)
-					fmt.Println(*start.Time(), *end.Time())
 				}
 				chart, err := api.GetChart(strings.ToUpper(symbol), intervalCmd, start, end)
 				if err != nil {
