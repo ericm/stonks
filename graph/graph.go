@@ -56,7 +56,6 @@ check:
 			y--
 		}
 		matrix[y][x*spacing] = bar
-		fmt.Println(bar.Current, bar.Timestamp.Time().Format(dateFormat))
 		bar.Y = y
 		if last != nil {
 			next := last.Y - bar.Y
