@@ -46,8 +46,7 @@ func GetChart(symbol string, interval datetime.Interval, date *datetime.Datetime
 		if chart == nil {
 			chart = &Chart{
 				Interval: interval,
-				Start:    datetime.FromUnix(q.Meta().CurrentTradingPeriod.Regular.Start),
-				End:      datetime.FromUnix(q.Meta().CurrentTradingPeriod.Regular.End),
+				Start:    datetime.FromUnix(q.Bar().Timestamp),
 				High:     q.Bar().High,
 				Low:      q.Bar().Low,
 				Open:     q.Bar().Open,
@@ -65,6 +64,7 @@ func GetChart(symbol string, interval datetime.Interval, date *datetime.Datetime
 			chart.Low = q.Bar().Low
 		}
 		chart.Close = q.Bar().Close
+		chart.End = datetime.FromUnix(q.Bar().Timestamp)
 		chart.Bars = append(chart.Bars, bar)
 	}
 	if chart == nil || len(chart.Bars) == 0 {

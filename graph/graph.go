@@ -8,6 +8,8 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+const dateFormat = "Mon 02/01/2006 15:04 GMT"
+
 func borderHorizontal(out *string, width int) {
 	for _i := 0; _i < width-2; _i++ {
 		*out += "━"
@@ -25,7 +27,7 @@ func GenerateGraph(chart *api.Chart, width int, height int) (string, error) {
 		chart.Ticker,
 		chart.Close.StringFixed(2),
 		chart.Currency,
-		chart.End.Time().Format("02/01/2006"),
+		chart.End.Time().Format(dateFormat),
 		chart.Exchange,
 	)
 check:
@@ -49,8 +51,11 @@ check:
 		bar.Char = "─"
 		y := height - int(bar.Current.Sub(chart.Low).Div(ran).Mul(
 			decimal.NewFromInt((int64(height)))).Floor().IntPart())
+		if y == height {
+			y--
+		}
 		matrix[y][x*spacing] = bar
-		fmt.Println(bar.Current)
+		fmt.Println(bar.Current, bar.Timestamp.Time().Format(dateFormat))
 		bar.Y = y
 		if last != nil {
 			next := last.Y - bar.Y
