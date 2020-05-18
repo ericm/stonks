@@ -20,7 +20,14 @@ var (
 )
 
 func main() {
-	viper.SetConfigFile("")
+	home, ok := os.LookupEnv("HOME")
+	if !ok {
+		panic("No HOME env var set")
+	}
+	viper.AddConfigPath(fmt.Sprintf("%s/.config/stonks/", home))
+	viper.SetConfigName("favourites")
+	viper.SetConfigType("yaml")
+	viper.ReadInConfig()
 	rootCmd := &cobra.Command{
 		Use:   "stonks",
 		Short: "A stock visualizer",
