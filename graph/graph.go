@@ -1,6 +1,8 @@
 package graph
 
 import (
+	"strings"
+
 	"github.com/ericm/stonks/api"
 	"github.com/shopspring/decimal"
 )
@@ -14,7 +16,8 @@ func borderHorizontal(out *string, width int) {
 // GenerateGraph with ASCII graph with ANSI escapes
 func GenerateGraph(chart *api.Chart, width int, height int) (string, error) {
 	out := "┏"
-	borderHorizontal(&out, width)
+	maxSize := len(strings.Split(chart.High.String(), ".")[0]) + 3
+	borderHorizontal(&out, width+maxSize+3)
 	out += "┓"
 	matrix := make([][]*api.Bar, height)
 	for i := range matrix {
@@ -100,7 +103,11 @@ func GenerateGraph(chart *api.Chart, width int, height int) (string, error) {
 				out += " "
 			}
 		}
+		out += "┃"
 		out += "\n"
 	}
+	out += "┗"
+	borderHorizontal(&out, width+maxSize+3)
+	out += "┛\n"
 	return out, nil
 }

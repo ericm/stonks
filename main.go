@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	chart, err := api.GetChart("ABEA", datetime.FifteenMins, nil)
+	chart, err := api.GetChart("AMD", datetime.FifteenMins, nil)
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
