@@ -15,11 +15,12 @@ import (
 )
 
 var (
-	interval *string
-	save     *string
-	name     *string
-	week     *bool
-	days     *int
+	interval,
+	save,
+	remove,
+	name *string
+	week *bool
+	days *int
 
 	configPath string
 )
@@ -34,7 +35,7 @@ func setDefaults() {
 	viper.SetConfigName("stonks")
 	viper.SetConfigType("yaml")
 
-	viper.SetDefault("favourites", map[string]string{})
+	viper.SetDefault("favourites", map[string]interface{}{})
 
 	viper.ReadInConfig()
 }
@@ -47,21 +48,21 @@ func main() {
 		Long:  "Displays realtime stocks in graph format in a terminal",
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(*save) > 0 {
-				*save = strings.ToUpper(*save)
-				if _, err := api.GetChart(strings.ToUpper(*save), datetime.FifteenMins, nil, nil); err != nil {
+				saveCmd := strings.ToUpper(*save)
+				if _, err := api.GetChart(saveCmd, datetime.FifteenMins, nil, nil); err != nil {
 					fmt.Println(err.Error())
 					os.Exit(1)
 				}
-				favourites, ok := viper.Get("favourites").(map[string]string)
+				favourites, ok := viper.Get("favourites").(map[string]interface{})
 				if !ok {
 					fmt.Println("Read config error")
 					os.Exit(1)
 				}
-				nameCmd := *save
+				nameCmd := saveCmd
 				if len(*name) > 0 {
 					nameCmd = *name
 				}
-				favourites[*save] = nameCmd
+				favourites[saveCmd] = nameCmd
 				viper.Set("favourites", favourites)
 				if err := viper.WriteConfig(); err != nil {
 					err = viper.WriteConfigAs(path.Join(configPath, "stonks"))
@@ -71,6 +72,27 @@ func main() {
 					}
 				}
 				return
+			}
+			if len(args) == 0 {
+				// Favourites
+				favourites, ok := viper.Get("favourites").(map[string]interface{})
+				if !ok {
+					fmt.Println("Read config error")
+					os.Exit(1)
+				}
+				if len(favourites) == 0 {
+					fmt.Println("No favourites added. You can add them in the format 'stonks -s AMD -n \"Advanced Micro Devices\"'")
+				}
+				for symbol, nameInterface := range favourites {
+					name := nameInterface.(string)
+					fmt.Println(name + ":")
+					chart, err := api.GetChart(strings.ToUpper(symbol), datetime.FifteenMins, nil, nil)
+					if err != nil {
+						fmt.Println(err.Error())
+					}
+					g, _ := graph.GenerateGraph(chart, 80, 12)
+					fmt.Print(g)
+				}
 			}
 			for _, symbol := range args {
 				var intervalCmd datetime.Interval
@@ -110,6 +132,7 @@ func main() {
 	week = rootCmd.PersistentFlags().BoolP("week", "w", false, "Display the last week (will set interval to 1d)")
 	days = rootCmd.PersistentFlags().IntP("days", "d", 0, "Stocks from X number of days ago.")
 	save = rootCmd.PersistentFlags().StringP("save", "s", "", "Add an item to the default stonks command. (Eg: -s AMD -n \"Advanced Micro Devices\")")
+	remove = rootCmd.PersistentFlags().StringP("remove", "r", "", "Remove an item from favourites")
 	name = rootCmd.PersistentFlags().StringP("name", "n", "", "Optional name for a stonk save")
 
 	rootCmd.Execute()
