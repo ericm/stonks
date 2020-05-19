@@ -30,10 +30,12 @@ Usage:
 Flags:
   -d, --days int          Stocks from X number of days ago.
   -h, --help              help for stonks
-  -i, --interval string   stonks -t X[m|h] (eg 15m, 5m, 1h, 1d) (default "15m")
+  -i, --interval string   stonks -i X[m|h] (eg 15m, 5m, 1h, 1d) (default "15m")
   -n, --name string       Optional name for a stonk save
   -r, --remove string     Remove an item from favourites
   -s, --save string       Add an item to the default stonks command. (Eg: -s AMD -n "Advanced Micro Devices")
+  -t, --theme string      Display theme for the chart (Options: "line", "dot", "icon") (default "line")
+  -v, --version           stonks version
   -w, --week              Display the last week (will set interval to 1d)
 ```
 
