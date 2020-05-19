@@ -8,9 +8,22 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-const dateFormat = "Mon 02/01/2006 15:04 GMT"
-const timeFormat = "3.04pm"
-const dayFormat = "2 Jan"
+const (
+	dateFormat = "Mon 02/01/2006 15:04 GMT"
+	timeFormat = "3.04pm"
+	dayFormat  = "2 Jan"
+)
+
+type chartTheme int
+
+const (
+	// LineTheme is the lines chart theme
+	LineTheme chartTheme = iota
+	// DotTheme is the dots chart theme
+	DotTheme
+	// IconTheme is the icon chart theme
+	IconTheme
+)
 
 func borderHorizontal(out *string, width int) {
 	for _i := 0; _i < width-2; _i++ {
@@ -19,7 +32,7 @@ func borderHorizontal(out *string, width int) {
 }
 
 // GenerateGraph with ASCII graph with ANSI escapes
-func GenerateGraph(chart *api.Chart, width int, height int) (string, error) {
+func GenerateGraph(chart *api.Chart, width int, height int, chartTheme chartTheme) (string, error) {
 	out := "┏"
 	maxSize := len(strings.Split(chart.High.String(), ".")[0]) + 3
 	borderHorizontal(&out, width+maxSize+3)
@@ -63,8 +76,22 @@ check:
 	}
 	out += "\n"
 	var last *api.Bar
+	var (
+		upChar   = "╱"
+		flatChar = "─"
+		downChar = "╲"
+	)
+	if chartTheme == DotTheme {
+		upChar = "·"
+		flatChar = "·"
+		downChar = "·"
+	} else if chartTheme == IconTheme {
+		upChar = "⬆"
+		flatChar = "❚"
+		downChar = "⬇"
+	}
 	for x, bar := range chart.Bars {
-		bar.Char = "─"
+		bar.Char = flatChar
 		y := height - int(bar.Current.Sub(chart.Low).Div(ran).Mul(
 			decimal.NewFromInt((int64(height)))).Floor().IntPart())
 		if y >= height {
@@ -83,7 +110,7 @@ check:
 			currY := last.Y
 			switch {
 			case next > 0:
-				char = "╱"
+				char = upChar
 				bar.Char = char
 				for i := 0; i < spacing-1; i++ {
 					currY--
@@ -92,7 +119,7 @@ check:
 					}
 				}
 			case next < 0:
-				char = "╲"
+				char = downChar
 				bar.Char = char
 				for i := 0; i < spacing-1; i++ {
 					currY++
@@ -101,12 +128,13 @@ check:
 					}
 				}
 			case next == 0:
-				char = "─"
+				char = flatChar
 				last.Char = char
 				for i := 0; i < spacing-1; i++ {
 					matrix[currY][i+((x-1)*spacing)+1] = &api.Bar{Char: char}
 				}
 			}
+
 			// Edge cases
 			switch last.Char {
 			case "╱":
