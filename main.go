@@ -23,6 +23,7 @@ var (
 	name *string
 	week    *bool
 	version *bool
+	theme   *string
 	days    *int
 
 	configPath string
@@ -35,7 +36,7 @@ func setDefaults() {
 	}
 	configPath = fmt.Sprintf("%s/.config", home)
 	viper.AddConfigPath(configPath)
-	viper.SetConfigName("stonks")
+	viper.SetConfigName("stonks.yml")
 	viper.SetConfigType("yaml")
 
 	viper.SetDefault("favourites", map[string]interface{}{})
@@ -54,6 +55,7 @@ func main() {
 				fmt.Println(Version)
 				return
 			}
+
 			if len(*remove) > 0 {
 				saveCmd := strings.ToLower(*remove)
 				favourites, ok := viper.Get("favourites").(map[string]interface{})
@@ -66,6 +68,7 @@ func main() {
 				viper.WriteConfig()
 				return
 			}
+
 			if len(*save) > 0 {
 				saveCmd := strings.ToUpper(*save)
 				if _, err := api.GetChart(saveCmd, datetime.FifteenMins, nil, nil); err != nil {
@@ -84,7 +87,7 @@ func main() {
 				favourites[saveCmd] = nameCmd
 				viper.Set("favourites", favourites)
 				if err := viper.WriteConfig(); err != nil {
-					err = viper.WriteConfigAs(path.Join(configPath, "stonks"))
+					err = viper.WriteConfigAs(path.Join(configPath, "stonks.yml"))
 					if err != nil {
 						fmt.Println(err.Error())
 						os.Exit(1)
@@ -92,6 +95,21 @@ func main() {
 				}
 				return
 			}
+
+			chartTheme := graph.LineTheme
+
+			switch {
+			case *theme == "line":
+				chartTheme = graph.LineTheme
+			case *theme == "dot":
+				chartTheme = graph.DotTheme
+			case *theme == "icon":
+				chartTheme = graph.IconTheme
+			default:
+				fmt.Println("Unknown theme, must be \"line\", \"dot\" or \"icon\"")
+				os.Exit(1)
+			}
+
 			if len(args) == 0 {
 				// Favourites
 				favourites, ok := viper.Get("favourites").(map[string]interface{})
@@ -109,10 +127,11 @@ func main() {
 					if err != nil {
 						fmt.Println(err.Error())
 					}
-					g, _ := graph.GenerateGraph(chart, 80, 12)
+					g, _ := graph.GenerateGraph(chart, 80, 12, chartTheme)
 					fmt.Print(g)
 				}
 			}
+
 			for _, symbol := range args {
 				var intervalCmd datetime.Interval
 				var start *datetime.Datetime
@@ -142,14 +161,15 @@ func main() {
 					fmt.Println(err.Error())
 					os.Exit(1)
 				}
-				g, _ := graph.GenerateGraph(chart, 80, 12)
+				g, _ := graph.GenerateGraph(chart, 80, 12, chartTheme)
 				fmt.Print(g)
 			}
 		},
 	}
-	interval = rootCmd.PersistentFlags().StringP("interval", "i", "15m", "stonks -t X[m|h] (eg 15m, 5m, 1h, 1d)")
+	interval = rootCmd.PersistentFlags().StringP("interval", "i", "15m", "stonks -i X[m|h] (eg 15m, 5m, 1h, 1d)")
 	week = rootCmd.PersistentFlags().BoolP("week", "w", false, "Display the last week (will set interval to 1d)")
 	days = rootCmd.PersistentFlags().IntP("days", "d", 0, "Stocks from X number of days ago.")
+	theme = rootCmd.PersistentFlags().StringP("theme", "t", "line", "Display theme for the chart (Options: \"line\", \"dot\", \"icon\")")
 	save = rootCmd.PersistentFlags().StringP("save", "s", "", "Add an item to the default stonks command. (Eg: -s AMD -n \"Advanced Micro Devices\")")
 	remove = rootCmd.PersistentFlags().StringP("remove", "r", "", "Remove an item from favourites")
 	name = rootCmd.PersistentFlags().StringP("name", "n", "", "Optional name for a stonk save")
