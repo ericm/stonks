@@ -65,3 +65,5 @@ Requirements: golang >= 1.13
 ### Packages
 
 Stonks is available on:
+
+- [The AUR](https://aur.archlinux.org/packages/stonks/)

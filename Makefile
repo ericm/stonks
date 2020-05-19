@@ -8,4 +8,4 @@ install:
 	go install -v
 
 uninstall:
-	rm -f ${HOME}/go/bin/stonks
+	rm -f ${GOPATH}/bin/stonks
