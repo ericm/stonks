@@ -1,4 +1,9 @@
 # ![Stonks](./assets/stonks.png)
+![GitHub](https://img.shields.io/github/license/ericm/stonks?style=for-the-badge)
+![GitHub contributors](https://img.shields.io/github/contributors/ericm/stonks?style=for-the-badge)
+![GitHub last commit](https://img.shields.io/github/last-commit/ericm/stonks?style=for-the-badge)
+![AUR version](https://img.shields.io/aur/version/stonks?style=for-the-badge)
+
 
 Stonks is a terminal based stock visualizer and tracker.
 
