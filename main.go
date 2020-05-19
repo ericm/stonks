@@ -35,7 +35,7 @@ func setDefaults() {
 	}
 	configPath = fmt.Sprintf("%s/.config", home)
 	viper.AddConfigPath(configPath)
-	viper.SetConfigName("stonks")
+	viper.SetConfigName("stonks.yml")
 	viper.SetConfigType("yaml")
 
 	viper.SetDefault("favourites", map[string]interface{}{})
@@ -84,7 +84,7 @@ func main() {
 				favourites[saveCmd] = nameCmd
 				viper.Set("favourites", favourites)
 				if err := viper.WriteConfig(); err != nil {
-					err = viper.WriteConfigAs(path.Join(configPath, "stonks"))
+					err = viper.WriteConfigAs(path.Join(configPath, "stonks.yml"))
 					if err != nil {
 						fmt.Println(err.Error())
 						os.Exit(1)
