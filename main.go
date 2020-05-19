@@ -14,13 +14,16 @@ import (
 	"github.com/spf13/viper"
 )
 
+const Version = "1.0.0"
+
 var (
 	interval,
 	save,
 	remove,
 	name *string
-	week *bool
-	days *int
+	week    *bool
+	version *bool
+	days    *int
 
 	configPath string
 )
@@ -47,6 +50,10 @@ func main() {
 		Short: "A stock visualizer",
 		Long:  "Displays realtime stocks in graph format in a terminal",
 		Run: func(cmd *cobra.Command, args []string) {
+			if *version {
+				fmt.Println(Version)
+				return
+			}
 			if len(*remove) > 0 {
 				saveCmd := strings.ToLower(*remove)
 				favourites, ok := viper.Get("favourites").(map[string]interface{})
@@ -146,6 +153,7 @@ func main() {
 	save = rootCmd.PersistentFlags().StringP("save", "s", "", "Add an item to the default stonks command. (Eg: -s AMD -n \"Advanced Micro Devices\")")
 	remove = rootCmd.PersistentFlags().StringP("remove", "r", "", "Remove an item from favourites")
 	name = rootCmd.PersistentFlags().StringP("name", "n", "", "Optional name for a stonk save")
+	version = rootCmd.PersistentFlags().BoolP("version", "v", false, "stonks version")
 
 	rootCmd.Execute()
 }
