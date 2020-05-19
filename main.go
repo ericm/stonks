@@ -47,6 +47,18 @@ func main() {
 		Short: "A stock visualizer",
 		Long:  "Displays realtime stocks in graph format in a terminal",
 		Run: func(cmd *cobra.Command, args []string) {
+			if len(*remove) > 0 {
+				saveCmd := strings.ToLower(*remove)
+				favourites, ok := viper.Get("favourites").(map[string]interface{})
+				if !ok {
+					fmt.Println("Read config error")
+					os.Exit(1)
+				}
+				delete(favourites, saveCmd)
+				viper.Set("favourites", favourites)
+				viper.WriteConfig()
+				return
+			}
 			if len(*save) > 0 {
 				saveCmd := strings.ToUpper(*save)
 				if _, err := api.GetChart(saveCmd, datetime.FifteenMins, nil, nil); err != nil {
