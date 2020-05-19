@@ -2,6 +2,21 @@
 
 Stonks is a terminal based stock visualizer and tracker.
 
+## Installation
+
+Requirements: golang >= 1.13
+
+### Manual
+
+1. Clone the repo
+2. Run `make && make install`
+
+### Packages
+
+Stonks is available on:
+
+- [The AUR](https://aur.archlinux.org/packages/stonks/). You can install it on arch linux with my other project [yup](https://github.com/ericm/yup): `$ yup -S stonks`
+
 ## Usage
 
 It uses Yahoo Finance as a backend so use the ticker format as seen on their website.
@@ -52,18 +67,3 @@ Gives the current stock for each ticker passed _for the passed week_
 Gives the current stock for each ticker passed X days ago
 
 ![Stonks](./assets/4.png)
-
-## Installation
-
-Requirements: golang >= 1.13
-
-### Manual
-
-1. Clone the repo
-2. Run `make && make install`
-
-### Packages
-
-Stonks is available on:
-
-- [The AUR](https://aur.archlinux.org/packages/stonks/)
