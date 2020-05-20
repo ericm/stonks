@@ -22,7 +22,7 @@ Stonks is available on:
 
 - [The AUR](https://aur.archlinux.org/packages/stonks/). You can install it on arch linux with my other project [yup](https://github.com/ericm/yup): `$ yup -S stonks`
 
-- HomeBrew: `brew install ericm/stonks/stonks.rb`
+- HomeBrew: `brew install ericm/stonks/stonks`
 
 ## Usage
 
