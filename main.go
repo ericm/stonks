@@ -85,7 +85,7 @@ func main() {
 				if len(*name) > 0 {
 					nameCmd = *name
 				}
-				favourites[saveCmd] = nameCmd
+				favourites[strings.ReplaceAll(saveCmd, ".", "_")] = nameCmd
 				viper.Set("favourites", favourites)
 				if err := viper.WriteConfig(); err != nil {
 					err = viper.WriteConfigAs(path.Join(configPath, "stonks.yml"))
@@ -130,9 +130,10 @@ func main() {
 				for _, symbol := range keys {
 					name := favourites[symbol].(string)
 					fmt.Println(name + ":")
-					chart, err := api.GetChart(strings.ToUpper(symbol), datetime.FifteenMins, nil, nil)
+					chart, err := api.GetChart(strings.ReplaceAll(strings.ToUpper(symbol), "_", "."), datetime.FifteenMins, nil, nil)
 					if err != nil {
 						fmt.Println(err.Error())
+						continue
 					}
 					g, _ := graph.GenerateGraph(chart, 80, 12, chartTheme)
 					fmt.Print(g)
