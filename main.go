@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"sort"
 	"strings"
 	"time"
 
@@ -120,8 +121,14 @@ func main() {
 				if len(favourites) == 0 {
 					fmt.Println("No favourites added. You can add them in the format 'stonks -s AMD -n \"Advanced Micro Devices\"'")
 				}
-				for symbol, nameInterface := range favourites {
-					name := nameInterface.(string)
+
+				keys := make([]string, 0, len(favourites))
+				for k := range favourites {
+					keys = append(keys, k)
+				}
+				sort.Strings(keys)
+				for _, symbol := range keys {
+					name := favourites[symbol].(string)
 					fmt.Println(name + ":")
 					chart, err := api.GetChart(strings.ToUpper(symbol), datetime.FifteenMins, nil, nil)
 					if err != nil {
