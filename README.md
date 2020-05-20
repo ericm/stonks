@@ -1,9 +1,9 @@
 # ![Stonks](./assets/stonks.png)
+
 ![GitHub](https://img.shields.io/github/license/ericm/stonks?style=for-the-badge)
 ![GitHub contributors](https://img.shields.io/github/contributors/ericm/stonks?style=for-the-badge)
 ![GitHub last commit](https://img.shields.io/github/last-commit/ericm/stonks?style=for-the-badge)
 ![AUR version](https://img.shields.io/aur/version/stonks?style=for-the-badge)
-
 
 Stonks is a terminal based stock visualizer and tracker.
 
@@ -74,3 +74,16 @@ Gives the current stock for each ticker passed _for the passed week_
 Gives the current stock for each ticker passed X days ago
 
 ![Stonks](./assets/4.png)
+
+## Configuration
+
+The config file is located at `~/.config/stonks.yml`
+
+You can change the following options:
+
+```yml
+config:
+  default_theme: 0 # 0: Line, 1: Dots, 2: Icons
+  favourites_height: 12 # Height of the chart in each info panel
+  standalone_height: 12
+```
