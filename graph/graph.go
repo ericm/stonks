@@ -14,11 +14,12 @@ const (
 	dayFormat  = "2 Jan"
 )
 
-type chartTheme int
+// ChartTheme to change characters
+type ChartTheme int
 
 const (
 	// LineTheme is the lines chart theme
-	LineTheme chartTheme = iota
+	LineTheme ChartTheme = iota
 	// DotTheme is the dots chart theme
 	DotTheme
 	// IconTheme is the icon chart theme
@@ -32,7 +33,7 @@ func borderHorizontal(out *string, width int) {
 }
 
 // GenerateGraph with ASCII graph with ANSI escapes
-func GenerateGraph(chart *api.Chart, width int, height int, chartTheme chartTheme) (string, error) {
+func GenerateGraph(chart *api.Chart, width int, height int, chartTheme ChartTheme) (string, error) {
 	out := "┏"
 	maxSize := len(strings.Split(chart.High.String(), ".")[0]) + 3
 	borderHorizontal(&out, width+maxSize+3)

@@ -42,6 +42,11 @@ func setDefaults() {
 
 	viper.SetDefault("favourites", map[string]interface{}{})
 
+	// Config defaults
+	viper.SetDefault("config.standalone_height", 12)
+	viper.SetDefault("config.favourites_height", 12)
+	viper.SetDefault("config.default_theme", graph.LineTheme)
+
 	viper.ReadInConfig()
 }
 
@@ -97,7 +102,7 @@ func main() {
 				return
 			}
 
-			chartTheme := graph.LineTheme
+			chartTheme := viper.Get("config.default_theme").(graph.ChartTheme)
 
 			switch {
 			case *theme == "line":
@@ -135,7 +140,7 @@ func main() {
 						fmt.Println(err.Error())
 						continue
 					}
-					g, _ := graph.GenerateGraph(chart, 80, 12, chartTheme)
+					g, _ := graph.GenerateGraph(chart, 80, viper.GetInt("config.favourites_height"), chartTheme)
 					fmt.Print(g)
 				}
 			}
@@ -169,7 +174,7 @@ func main() {
 					fmt.Println(err.Error())
 					os.Exit(1)
 				}
-				g, _ := graph.GenerateGraph(chart, 80, 12, chartTheme)
+				g, _ := graph.GenerateGraph(chart, 80, viper.GetInt("config.standalone_height"), chartTheme)
 				fmt.Print(g)
 			}
 		},
