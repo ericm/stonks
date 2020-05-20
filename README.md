@@ -22,6 +22,8 @@ Stonks is available on:
 
 - [The AUR](https://aur.archlinux.org/packages/stonks/). You can install it on arch linux with my other project [yup](https://github.com/ericm/yup): `$ yup -S stonks`
 
+- HomeBrew: `brew install ericm/stonks/stonks.rb`
+
 ## Usage
 
 It uses Yahoo Finance as a backend so use the ticker format as seen on their website.
