@@ -103,7 +103,7 @@ func main() {
 				return
 			}
 
-			chartTheme := viper.Get("config.default_theme").(graph.ChartTheme)
+			chartTheme := graph.ChartTheme(viper.GetInt("config.default_theme"))
 
 			switch {
 			case *theme == "line":
