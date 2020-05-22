@@ -1,4 +1,4 @@
-# ![Stonks](./assets/stonks.png)
+# ![Stonks](./assets/stonks.svg?raw=true)
 
 ![GitHub](https://img.shields.io/github/license/ericm/stonks?style=for-the-badge)
 ![GitHub contributors](https://img.shields.io/github/contributors/ericm/stonks?style=for-the-badge)
