@@ -10,7 +10,7 @@ jobs:
 
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: [ubuntu-latest, windows-latest]
     steps:
 
     - name: Set up Go 1.14
@@ -30,3 +30,4 @@ jobs:
       with:
         name: stonks
         path: ./stonks
+
