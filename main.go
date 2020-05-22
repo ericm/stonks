@@ -113,8 +113,10 @@ func main() {
 			case *theme == "icon":
 				chartTheme = graph.IconTheme
 			default:
-				fmt.Println("Unknown theme, must be \"line\", \"dot\" or \"icon\"")
-				os.Exit(1)
+				if len(*theme) > 0 {
+					fmt.Println("Unknown theme, must be \"line\", \"dot\" or \"icon\"")
+					os.Exit(1)
+				}
 			}
 
 			if len(args) == 0 {
@@ -183,7 +185,7 @@ func main() {
 	interval = rootCmd.PersistentFlags().StringP("interval", "i", "15m", "stonks -i X[m|h] (eg 15m, 5m, 1h, 1d)")
 	week = rootCmd.PersistentFlags().BoolP("week", "w", false, "Display the last week (will set interval to 1d)")
 	days = rootCmd.PersistentFlags().IntP("days", "d", 0, "Stocks from X number of days ago.")
-	theme = rootCmd.PersistentFlags().StringP("theme", "t", "line", "Display theme for the chart (Options: \"line\", \"dot\", \"icon\")")
+	theme = rootCmd.PersistentFlags().StringP("theme", "t", "", "Display theme for the chart (Options: \"line\", \"dot\", \"icon\")")
 	save = rootCmd.PersistentFlags().StringP("save", "s", "", "Add an item to the default stonks command. (Eg: -s AMD -n \"Advanced Micro Devices\")")
 	remove = rootCmd.PersistentFlags().StringP("remove", "r", "", "Remove an item from favourites")
 	name = rootCmd.PersistentFlags().StringP("name", "n", "", "Optional name for a stonk save")
