@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	dateFormat = "Mon 02/01/2006 15:04 GMT"
+	dateFormat = "Mon 02/01/2006 15:04"
 	timeFormat = "3.04pm"
 	dayFormat  = "2 Jan"
 )
@@ -47,12 +47,13 @@ func GenerateGraph(chart *api.Chart, width int, height int, chartTheme ChartThem
 	}
 	// fmt.Println(chart.Start.Time(), chart.End.Time())
 	info := fmt.Sprintf(
-		"\n┃\033[95m %s | \033[%dm%s %s (%s%%)\033[95m on %s | Prev: %s | %s \033[0m",
+		"\n┃\033[95m %s | \033[%dm%s %s (%s%% | %s)\033[95m on %s | Prev: %s | %s \033[0m",
 		chart.Ticker,
 		colour,
 		chart.Close.StringFixed(2),
 		chart.Currency,
 		chart.Change.StringFixed(2),
+		chart.ChangeVal.StringFixed(2),
 		chart.End.Time().Format(dateFormat),
 		chart.Prev.StringFixed(2),
 		chart.Exchange,
