@@ -1,9 +1,10 @@
 # ![Stonks](./assets/stonks.svg?raw=true)
 
-![GitHub](https://img.shields.io/github/license/ericm/stonks?style=for-the-badge)
-![GitHub contributors](https://img.shields.io/github/contributors/ericm/stonks?style=for-the-badge)
-![GitHub last commit](https://img.shields.io/github/last-commit/ericm/stonks?style=for-the-badge)
-![AUR version](https://img.shields.io/aur/version/stonks?style=for-the-badge)
+[![GitHub](https://img.shields.io/github/license/ericm/stonks?style=for-the-badge)](https://github.com/ericm/stonks/blob/master/LICENSE)
+[![GitHub contributors](https://img.shields.io/github/contributors/ericm/stonks?style=for-the-badge)](https://github.com/ericm/stonks/graphs/contributors)
+[![GitHub last commit](https://img.shields.io/github/last-commit/ericm/stonks?style=for-the-badge)](https://github.com/ericm/stonks/commits/master)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/ericm/stonks?style=for-the-badge)](https://github.com/ericm/stonks/releases)
+[![AUR version](https://img.shields.io/aur/version/stonks?style=for-the-badge)](https://aur.archlinux.org/packages/stonks/)
 
 Stonks is a terminal based stock visualizer and tracker.
 
