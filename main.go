@@ -23,8 +23,8 @@ var (
 	save,
 	remove,
 	name *string
-	year	*bool
-	ytd		*bool
+	year    *bool
+	ytd     *bool
 	week    *bool
 	version *bool
 	theme   *string
@@ -122,6 +122,7 @@ func main() {
 			}
 
 			if len(args) == 0 {
+				intervalCmd, start, end := parseTimeRange()
 				// Favourites
 				favourites, ok := viper.Get("favourites").(map[string]interface{})
 				if !ok {
@@ -140,7 +141,7 @@ func main() {
 				for _, symbol := range keys {
 					name := favourites[symbol].(string)
 					fmt.Println(name + ":")
-					chart, err := api.GetChart(strings.ReplaceAll(strings.ToUpper(symbol), "_", "."), datetime.FifteenMins, nil, nil)
+					chart, err := api.GetChart(strings.ReplaceAll(strings.ToUpper(symbol), "_", "."), intervalCmd, start, end)
 					if err != nil {
 						fmt.Println(err.Error())
 						continue
@@ -151,41 +152,7 @@ func main() {
 			}
 
 			for _, symbol := range args {
-				var intervalCmd datetime.Interval
-				var start *datetime.Datetime
-				var end *datetime.Datetime
-				if *year {
-					intervalCmd = datetime.FiveDay
-					rn := time.Now()
-					e := rn.AddDate(-1, 0, 0)
-					start = datetime.New(&e)
-					end = datetime.New(&rn)
-				} else if *ytd {
-					intervalCmd = datetime.FiveDay
-					rn := time.Now()
-					e := rn.AddDate(0, -int(rn.Month()), -rn.Day())
-					start = datetime.New(&e)
-					end = datetime.New(&rn)
-				}else if *week {
-					intervalCmd = datetime.OneHour
-					rn := time.Now()
-					e := rn.AddDate(0, 0, -7)
-					start = datetime.New(&e)
-					end = datetime.New(&rn)
-				} else if interval == nil {
-					intervalCmd = datetime.FifteenMins
-				} else {
-					intervalCmd = datetime.Interval(*interval)
-				}
-				if *days > 0 {
-					s := time.Now().AddDate(0, 0, *days*-1)
-					y, m, d := s.Date()
-					s = time.Date(y, m, d, 0, 0, 0, 0, s.Location())
-
-					start = datetime.New(&s)
-					e := time.Date(y, m, d, 23, 0, 0, 0, s.Location())
-					end = datetime.New(&e)
-				}
+				intervalCmd, start, end := parseTimeRange()
 				chart, err := api.GetChart(strings.ToUpper(symbol), intervalCmd, start, end)
 				if err != nil {
 					fmt.Println(err.Error())
@@ -208,4 +175,45 @@ func main() {
 	version = rootCmd.PersistentFlags().BoolP("version", "v", false, "stonks version")
 
 	rootCmd.Execute()
+}
+
+func parseTimeRange() (datetime.Interval, *datetime.Datetime, *datetime.Datetime) {
+	var (
+		intervalCmd datetime.Interval
+		start       *datetime.Datetime
+		end         *datetime.Datetime
+	)
+	if *year {
+		intervalCmd = datetime.FiveDay
+		rn := time.Now()
+		e := rn.AddDate(-1, 0, 0)
+		start = datetime.New(&e)
+		end = datetime.New(&rn)
+	} else if *ytd {
+		intervalCmd = datetime.FiveDay
+		rn := time.Now()
+		e := rn.AddDate(0, -int(rn.Month()), -rn.Day())
+		start = datetime.New(&e)
+		end = datetime.New(&rn)
+	} else if *week {
+		intervalCmd = datetime.OneHour
+		rn := time.Now()
+		e := rn.AddDate(0, 0, -7)
+		start = datetime.New(&e)
+		end = datetime.New(&rn)
+	} else if interval == nil {
+		intervalCmd = datetime.FifteenMins
+	} else {
+		intervalCmd = datetime.Interval(*interval)
+	}
+	if *days > 0 {
+		s := time.Now().AddDate(0, 0, *days*-1)
+		y, m, d := s.Date()
+		s = time.Date(y, m, d, 0, 0, 0, 0, s.Location())
+
+		start = datetime.New(&s)
+		e := time.Date(y, m, d, 23, 0, 0, 0, s.Location())
+		end = datetime.New(&e)
+	}
+	return intervalCmd, start, end
 }
