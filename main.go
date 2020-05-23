@@ -155,13 +155,13 @@ func main() {
 				var start *datetime.Datetime
 				var end *datetime.Datetime
 				if *year {
-					intervalCmd = datetime.OneMonth
+					intervalCmd = datetime.FiveDay
 					rn := time.Now()
 					e := rn.AddDate(-1, 0, 0)
 					start = datetime.New(&e)
 					end = datetime.New(&rn)
 				} else if *ytd {
-					intervalCmd = datetime.OneMonth
+					intervalCmd = datetime.FiveDay
 					rn := time.Now()
 					e := rn.AddDate(0, -int(rn.Month()), -rn.Day())
 					start = datetime.New(&e)
@@ -197,8 +197,8 @@ func main() {
 		},
 	}
 	interval = rootCmd.PersistentFlags().StringP("interval", "i", "15m", "stonks -i X[m|h] (eg 15m, 5m, 1h, 1d)")
-	year = rootCmd.PersistentFlags().BoolP("year", "y", false, "Display the last year (will set interval to 1mo)")
-	ytd = rootCmd.PersistentFlags().Bool("ytd", false, "Display the year to date (will set interval to 1mo)")
+	year = rootCmd.PersistentFlags().BoolP("year", "y", false, "Display the last year (will set interval to 5d)")
+	ytd = rootCmd.PersistentFlags().Bool("ytd", false, "Display the year to date (will set interval to 5d)")
 	week = rootCmd.PersistentFlags().BoolP("week", "w", false, "Display the last week (will set interval to 1d)")
 	days = rootCmd.PersistentFlags().IntP("days", "d", 0, "Stocks from X number of days ago.")
 	theme = rootCmd.PersistentFlags().StringP("theme", "t", "", "Display theme for the chart (Options: \"line\", \"dot\", \"icon\")")

@@ -45,8 +45,8 @@ Flags:
   -t, --theme string      Display theme for the chart (Options: "line", "dot", "icon") (default "line")
   -v, --version           stonks version
   -w, --week              Display the last week (will set interval to 1d)              
-  -y, --year              Display the last year (will set interval to 1mo)
-      --ytd               Display the year to date (will set interval to 1mo)
+  -y, --year              Display the last year (will set interval to 5d)
+      --ytd               Display the year to date (will set interval to 5d)
 ```
 
 ### `$ stonks`
