@@ -107,12 +107,12 @@ func main() {
 
 			chartTheme := graph.ChartTheme(viper.GetInt("config.default_theme"))
 
-			switch {
-			case *theme == "line":
+			switch *theme {
+			case "line":
 				chartTheme = graph.LineTheme
-			case *theme == "dot":
+			case "dot":
 				chartTheme = graph.DotTheme
-			case *theme == "icon":
+			case "icon":
 				chartTheme = graph.IconTheme
 			default:
 				if len(*theme) > 0 {
@@ -183,29 +183,31 @@ func parseTimeRange() (datetime.Interval, *datetime.Datetime, *datetime.Datetime
 		start       *datetime.Datetime
 		end         *datetime.Datetime
 	)
-	if *year {
+	switch {
+	case *year:
 		intervalCmd = datetime.FiveDay
 		rn := time.Now()
 		e := rn.AddDate(-1, 0, 0)
 		start = datetime.New(&e)
 		end = datetime.New(&rn)
-	} else if *ytd {
+	case *ytd:
 		intervalCmd = datetime.FiveDay
 		rn := time.Now()
 		e := rn.AddDate(0, -int(rn.Month()), -rn.Day())
 		start = datetime.New(&e)
 		end = datetime.New(&rn)
-	} else if *week {
+	case *week:
 		intervalCmd = datetime.OneHour
 		rn := time.Now()
 		e := rn.AddDate(0, 0, -7)
 		start = datetime.New(&e)
 		end = datetime.New(&rn)
-	} else if interval == nil {
+	case interval == nil:
 		intervalCmd = datetime.FifteenMins
-	} else {
+	default:
 		intervalCmd = datetime.Interval(*interval)
 	}
+
 	if *days > 0 {
 		s := time.Now().AddDate(0, 0, *days*-1)
 		y, m, d := s.Date()
