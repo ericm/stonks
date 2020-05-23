@@ -25,6 +25,10 @@ Stonks is available on:
 
 - HomeBrew: `brew install ericm/stonks/stonks`
 
+### Binaries
+
+Binaries are now available for Windows, MacOSX and Linux under each [release](https://github.com/ericm/stonks/releases)
+
 ## Usage
 
 It uses Yahoo Finance as a backend so use the ticker format as seen on their website.
@@ -44,7 +48,7 @@ Flags:
   -s, --save string       Add an item to the default stonks command. (Eg: -s AMD -n "Advanced Micro Devices")
   -t, --theme string      Display theme for the chart (Options: "line", "dot", "icon") (default "line")
   -v, --version           stonks version
-  -w, --week              Display the last week (will set interval to 1d)              
+  -w, --week              Display the last week (will set interval to 1d)
   -y, --year              Display the last year (will set interval to 5d)
       --ytd               Display the year to date (will set interval to 5d)
 ```
