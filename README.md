@@ -96,3 +96,57 @@ config:
   favourites_height: 12 # Height of the chart in each info panel
   standalone_height: 12
 ```
+
+## Usage with wtfutil
+You can use a program such as [wtfutil](https://wtfutil.com/) (On Arch Linux: `yup -S wtfutil`) to make stonks refresh automatically.
+See the sample `~/.config/wtf/config.yml` provided by [Gideon Wolfe
+](https://github.com/GideonWolfe):
+```yml
+wtf:
+  colors:
+    background: black
+    border:
+      focusable: darkslateblue
+      focused: blue
+      normal: gray
+    checked: yellow
+    highlight: 
+      fore: black
+      back: gray
+    rows:
+      even: yellow
+      odd: white
+  grid:
+    # How _wide_ the columns are, in terminal characters. In this case we have
+    # four columns, each of which are 35 characters wide.
+    columns: [33, 33, 33]
+    # How _high_ the rows are, in terminal lines. In this case we have four rows
+    # that support ten line of text and one of four.
+    rows: [20, 20, 20, 20, 20, 20, 20, 20]
+  refreshInterval: 1
+  
+  mods:
+    tech:
+      type: cmdrunner
+      args: ["tsla", "intc", "--theme", "dot"]
+      cmd: "stonks"
+      enabled: true
+      position:
+        top: 0
+        left: 0
+        height: 2
+        width: 3
+      refreshinterval: 10
+      title: "🤖 Tech"
+    financial:
+      type: cmdrunner
+      args: ["jpm", "v", "--theme", "dot"]
+      cmd: "stonks"
+      enabled: true
+      position:
+        top: 2
+        left: 0
+        height: 2
+        width: 3
+      refreshinterval: 10
+```
