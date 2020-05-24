@@ -40,13 +40,13 @@ Usage:
   stonks [flags]
 
 Flags:
-  -d, --days int          Stocks from X number of days ago.
+  -d, --days int          24 hour period of stocks from X of days ago.
   -h, --help              help for stonks
   -i, --interval string   stonks -i X[m|h] (eg 15m, 5m, 1h, 1d) (default "15m")
   -n, --name string       Optional name for a stonk save
   -r, --remove string     Remove an item from favourites
   -s, --save string       Add an item to the default stonks command. (Eg: -s AMD -n "Advanced Micro Devices")
-  -t, --theme string      Display theme for the chart (Options: "line", "dot", "icon") (default "line")
+  -t, --theme string      Display theme for the chart (Options: "line", "dot", "icon")
   -v, --version           stonks version
   -w, --week              Display the last week (will set interval to 1d)
   -y, --year              Display the last year (will set interval to 5d)
@@ -98,9 +98,11 @@ config:
 ```
 
 ## Usage with wtfutil
+
 You can use a program such as [wtfutil](https://wtfutil.com/) (On Arch Linux: `yup -S wtfutil`) to make stonks refresh automatically.
 See the sample `~/.config/wtf/config.yml` provided by [Gideon Wolfe
 ](https://github.com/GideonWolfe):
+
 ```yml
 wtf:
   colors:
@@ -110,7 +112,7 @@ wtf:
       focused: blue
       normal: gray
     checked: yellow
-    highlight: 
+    highlight:
       fore: black
       back: gray
     rows:
@@ -124,7 +126,7 @@ wtf:
     # that support ten line of text and one of four.
     rows: [20, 20, 20, 20, 20, 20, 20, 20]
   refreshInterval: 1
-  
+
   mods:
     tech:
       type: cmdrunner

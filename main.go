@@ -167,7 +167,7 @@ func main() {
 	year = rootCmd.PersistentFlags().BoolP("year", "y", false, "Display the last year (will set interval to 5d)")
 	ytd = rootCmd.PersistentFlags().Bool("ytd", false, "Display the year to date (will set interval to 5d)")
 	week = rootCmd.PersistentFlags().BoolP("week", "w", false, "Display the last week (will set interval to 1d)")
-	days = rootCmd.PersistentFlags().IntP("days", "d", 0, "Stocks from X number of days ago.")
+	days = rootCmd.PersistentFlags().IntP("days", "d", 0, "24 hour period of stocks from X of days ago.")
 	theme = rootCmd.PersistentFlags().StringP("theme", "t", "", "Display theme for the chart (Options: \"line\", \"dot\", \"icon\")")
 	save = rootCmd.PersistentFlags().StringP("save", "s", "", "Add an item to the default stonks command. (Eg: -s AMD -n \"Advanced Micro Devices\")")
 	remove = rootCmd.PersistentFlags().StringP("remove", "r", "", "Remove an item from favourites")
