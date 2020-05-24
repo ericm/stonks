@@ -27,6 +27,7 @@ var (
 	ytd     *bool
 	week    *bool
 	version *bool
+	extra   *bool
 	theme   *string
 	days    *int
 
@@ -80,7 +81,7 @@ func main() {
 
 			if len(*save) > 0 {
 				saveCmd := strings.ToUpper(*save)
-				if _, err := api.GetChart(saveCmd, datetime.FifteenMins, nil, nil); err != nil {
+				if _, err := api.GetChart(saveCmd, datetime.FifteenMins, nil, nil, false); err != nil {
 					fmt.Println(err.Error())
 					os.Exit(1)
 				}
@@ -123,6 +124,10 @@ func main() {
 
 			if len(args) == 0 {
 				intervalCmd, start, end := parseTimeRange()
+				extraCmd := false
+				if end == nil {
+					extraCmd = *extra
+				}
 				// Favourites
 				favourites, ok := viper.Get("favourites").(map[string]interface{})
 				if !ok {
@@ -141,7 +146,7 @@ func main() {
 				for _, symbol := range keys {
 					name := favourites[symbol].(string)
 					fmt.Println(name + ":")
-					chart, err := api.GetChart(strings.ReplaceAll(strings.ToUpper(symbol), "_", "."), intervalCmd, start, end)
+					chart, err := api.GetChart(strings.ReplaceAll(strings.ToUpper(symbol), "_", "."), intervalCmd, start, end, extraCmd)
 					if err != nil {
 						fmt.Println(err.Error())
 						continue
@@ -153,7 +158,11 @@ func main() {
 
 			for _, symbol := range args {
 				intervalCmd, start, end := parseTimeRange()
-				chart, err := api.GetChart(strings.ToUpper(symbol), intervalCmd, start, end)
+				extraCmd := false
+				if end == nil {
+					extraCmd = *extra
+				}
+				chart, err := api.GetChart(strings.ToUpper(symbol), intervalCmd, start, end, extraCmd)
 				if err != nil {
 					fmt.Println(err.Error())
 					os.Exit(1)
@@ -173,6 +182,7 @@ func main() {
 	remove = rootCmd.PersistentFlags().StringP("remove", "r", "", "Remove an item from favourites")
 	name = rootCmd.PersistentFlags().StringP("name", "n", "", "Optional name for a stonk save")
 	version = rootCmd.PersistentFlags().BoolP("version", "v", false, "stonks version")
+	extra = rootCmd.PersistentFlags().BoolP("extra", "e", false, "Include extra pre + post time. (Only works for day)")
 
 	rootCmd.Execute()
 }

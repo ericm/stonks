@@ -203,7 +203,7 @@ incFooter:
 	for i, bar := range chart.Bars {
 		if i%mod == 0 {
 			format := timeFormat
-			if chart.End.Day != chart.Start.Day {
+			if chart.End.Day-chart.Start.Day > 1 {
 				format = dayFormat
 			}
 			t := bar.Timestamp.Time().Format(format)

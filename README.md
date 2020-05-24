@@ -41,6 +41,7 @@ Usage:
 
 Flags:
   -d, --days int          24 hour period of stocks from X of days ago.
+  -e, --extra             Include extra pre + post time. (Only works for day)
   -h, --help              help for stonks
   -i, --interval string   stonks -i X[m|h] (eg 15m, 5m, 1h, 1d) (default "15m")
   -n, --name string       Optional name for a stonk save
