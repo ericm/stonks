@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/piquette/finance-go/chart"
 	"github.com/piquette/finance-go/datetime"
@@ -40,6 +41,14 @@ func GetChart(symbol string, interval datetime.Interval, start *datetime.Datetim
 	q := chart.Get(&chart.Params{Symbol: symbol, Interval: interval, Start: start, End: end, IncludeExt: false})
 	if q.Count() < 7 && interval == datetime.FifteenMins {
 		q = chart.Get(&chart.Params{Symbol: symbol, Interval: datetime.FiveMins, Start: start, End: end, IncludeExt: false})
+		if q.Count() < 2 {
+			// Must be daily exclusive. Change range to month
+			rn := time.Now()
+			e := rn.AddDate(0, 0, -28)
+			start = datetime.New(&e)
+			end = datetime.New(&rn)
+			q = chart.Get(&chart.Params{Symbol: symbol, Interval: datetime.OneDay, Start: start, End: end, IncludeExt: false})
+		}
 	}
 	var chart *Chart
 	for q.Next() {
