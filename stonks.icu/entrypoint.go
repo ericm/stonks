@@ -11,6 +11,9 @@ import (
 	"github.com/spf13/viper"
 )
 
+const version = "1.0.6"
+const footer = "\nLike Stonks? Star it on GitHub: https://github.com/ericm/stonks\nstonks " + version + "\n"
+
 func main() {
 	configure()
 	http.HandleFunc("/", handleSymbol)
@@ -41,13 +44,13 @@ func handleSymbol(w http.ResponseWriter, r *http.Request) {
 			chart, err := api.GetChart(symbol, datetime.FifteenMins, nil, nil, false)
 			if err != nil {
 				w.WriteHeader(403)
-				w.Write([]byte(err.Error() + "\n"))
+				w.Write([]byte(err.Error() + "\n" + footer))
 				return
 			}
 			out, err := graph.GenerateGraph(chart, 80, 12, graph.LineTheme)
 			if err != nil {
 				w.WriteHeader(403)
-				w.Write([]byte(err.Error() + "\n"))
+				w.Write([]byte(err.Error() + "\n" + footer))
 				return
 			}
 			output += out
@@ -55,8 +58,8 @@ func handleSymbol(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(200)
 	if num == 0 {
-		w.Write([]byte("Please provide stonks in the format:\nstonks.icu/amd/intl\n"))
+		w.Write([]byte("Please provide stonks in the format:\nstonks.icu/amd/intl\n" + footer))
 	} else {
-		w.Write([]byte(output))
+		w.Write([]byte(output + footer))
 	}
 }
