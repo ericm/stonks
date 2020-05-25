@@ -8,10 +8,10 @@ RUN go get -v && go build -v -o stonks
 
 FROM alpine
 
-WORKDIR /stonks
+WORKDIR /bin
 
 COPY --from=build /stonks/stonks stonks
 
-RUN chmod +x /stonks/stonks
+RUN chmod +x stonks
 
-CMD [ "/stonks/stonks" ]
+CMD [ "stonks" ]
