@@ -17,6 +17,7 @@ const footer = "\nLike Stonks? Star it on GitHub: https://github.com/ericm/stonk
 func main() {
 	configure()
 	http.HandleFunc("/", handleSymbol)
+	fmt.Printf("Server listening on port %d", viper.GetInt("port"))
 	http.ListenAndServe(fmt.Sprintf(":%d", viper.GetInt("port")), nil)
 }
 
