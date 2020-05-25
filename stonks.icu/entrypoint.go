@@ -33,8 +33,10 @@ func handleSymbol(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	output := ""
+	num := 0
 	for _, symbol := range symbols {
 		if len(symbol) > 0 {
+			num++
 			symbol = strings.ToUpper(symbol)
 			chart, err := api.GetChart(symbol, datetime.FifteenMins, nil, nil, false)
 			if err != nil {
@@ -52,5 +54,9 @@ func handleSymbol(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	w.WriteHeader(200)
-	w.Write([]byte(output))
+	if num == 0 {
+		w.Write([]byte("Please provide stonks in the format:\nstonks.icu/amd/intl\n"))
+	} else {
+		w.Write([]byte(output))
+	}
 }
