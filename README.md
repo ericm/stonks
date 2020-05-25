@@ -29,6 +29,15 @@ Stonks is available on:
 
 Binaries are now available for Windows, MacOSX and Linux under each [release](https://github.com/ericm/stonks/releases)
 
+## [Online installationless usage (via curl)](http://stonks.icu)
+
+You can now access access basic stock graphs for passed stock tickers via the stonks HTTP client (stonks.icu).
+
+Try it:
+```
+$ curl stonks.icu/amd/ba
+```
+
 ## Usage
 
 It uses Yahoo Finance as a backend so use the ticker format as seen on their website.
