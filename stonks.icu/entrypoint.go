@@ -19,7 +19,14 @@ func main() {
 
 func handleSymbol(w http.ResponseWriter, r *http.Request) {
 	symbols := strings.Split(r.URL.Path, "/")
-	if !strings.Contains(r.Header.Get("User-Agent"), "curl/") {
+	plainText := false
+	for _, client := range clients {
+		if strings.Contains(r.Header.Get("User-Agent"), client+"/") {
+			plainText = true
+			break
+		}
+	}
+	if !plainText {
 		w.Header().Add("Location", "https://github.com/ericm/stonks")
 		w.WriteHeader(302)
 		w.Write([]byte(" "))
@@ -28,6 +35,7 @@ func handleSymbol(w http.ResponseWriter, r *http.Request) {
 	output := ""
 	for _, symbol := range symbols {
 		if len(symbol) > 0 {
+			symbol = strings.ToUpper(symbol)
 			chart, err := api.GetChart(symbol, datetime.FifteenMins, nil, nil, false)
 			if err != nil {
 				w.WriteHeader(403)
