@@ -29,5 +29,5 @@ jobs:
         # Docker repository to tag the image with
         repository: ${{ secrets.DOCKER_REPO }}
         # Path to the build context
-        path: ./stonks.icu
+        path: stonks.icu
         tags: latest,${{ github.sha }}
