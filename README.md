@@ -31,7 +31,7 @@ Binaries are now available for Windows, MacOSX and Linux under each [release](ht
 
 ## [Online installationless usage (via curl)](http://stonks.icu)
 
-You can now access access basic stock graphs for passed stock tickers via the stonks HTTP client (stonks.icu).
+You can now access basic stock graphs for passed stock tickers via the stonks HTTP client (stonks.icu).
 
 Try it:
 ```
@@ -84,7 +84,7 @@ Gives the current stock for each ticker passed that day
 
 ### `$ stonks -w AMD`
 
-Gives the current stock for each ticker passed _for the passed week_
+Gives the current stock for each ticker passed _for the past week_
 
 ![Stonks](./assets/3.png)
 
