@@ -10,7 +10,7 @@ FROM alpine
 
 WORKDIR /stonks
 
-COPY --from=build stonks stonks
+COPY --from=build /stonks/stonks stonks
 
 RUN chmod +x /stonks/stonks
 
