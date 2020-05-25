@@ -104,7 +104,6 @@ check:
 		}
 		matrix[y][newX] = bar
 		bar.Y = y
-		// fmt.Println(bar.Current, bar.Y)
 		if last != nil {
 			next := last.Y - bar.Y
 			var char string

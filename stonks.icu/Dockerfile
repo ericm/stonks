@@ -12,4 +12,6 @@ WORKDIR /stonks
 
 COPY --from=build stonks stonks
 
-ENTRYPOINT [ "/stonks/stonks" ]
+RUN chmod +x /stonks/stonks
+
+CMD [ "/stonks/stonks" ]
