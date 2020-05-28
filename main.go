@@ -15,9 +15,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Version of stonks
-const Version = "1.0.6"
-
 var (
 	interval,
 	save,
@@ -62,7 +59,7 @@ func main() {
 		Long:  "Displays realtime stocks in graph format in a terminal",
 		Run: func(cmd *cobra.Command, args []string) {
 			if *version {
-				fmt.Println(Version)
+				fmt.Println(api.Version)
 				return
 			}
 

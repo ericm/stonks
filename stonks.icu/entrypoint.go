@@ -11,8 +11,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const version = "1.0.6"
-const footer = "\nLike Stonks? Star it on GitHub: https://github.com/ericm/stonks\nstonks " + version + "\n"
+const footer = "\nLike Stonks? Star it on GitHub: https://github.com/ericm/stonks\nstonks " + api.Version + "\n"
 
 func main() {
 	configure()
