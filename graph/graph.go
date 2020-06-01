@@ -197,6 +197,7 @@ incFooter:
 	if mod < 3 {
 		mod = width / 10
 	}
+retryFooter:
 	diff := mod * spacing
 	lastLen := 0
 	for i, bar := range chart.Bars {
@@ -214,6 +215,10 @@ incFooter:
 			footer += t
 			lastLen = len(t)
 		}
+	}
+	if len(footer) > width+maxSize+4 {
+		mod++
+		goto retryFooter
 	}
 checkFooter:
 	if len(footer) < width+maxSize+4 {
