@@ -203,7 +203,7 @@ retryFooter:
 	for i, bar := range chart.Bars {
 		if i%mod == 0 {
 			format := timeFormat
-			if chart.End.Day-chart.Start.Day > 1 {
+			if chart.End.Unix()-chart.Start.Unix() > 86400 {
 				format = dayFormat
 			}
 			t := bar.Timestamp.Time().Format(format)
