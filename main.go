@@ -25,6 +25,7 @@ var (
 	week    *bool
 	version *bool
 	extra   *bool
+	width   *int
 	theme   *string
 	days    *int
 
@@ -148,7 +149,7 @@ func main() {
 						fmt.Println(err.Error())
 						continue
 					}
-					g, _ := graph.GenerateGraph(chart, 80, viper.GetInt("config.favourites_height"), chartTheme)
+					g, _ := graph.GenerateGraph(chart, *width, viper.GetInt("config.favourites_height"), chartTheme)
 					fmt.Print(g)
 				}
 			}
@@ -164,7 +165,7 @@ func main() {
 					fmt.Println(err.Error())
 					os.Exit(1)
 				}
-				g, _ := graph.GenerateGraph(chart, 80, viper.GetInt("config.standalone_height"), chartTheme)
+				g, _ := graph.GenerateGraph(chart, *width, viper.GetInt("config.standalone_height"), chartTheme)
 				fmt.Print(g)
 			}
 		},
@@ -180,6 +181,7 @@ func main() {
 	name = rootCmd.PersistentFlags().StringP("name", "n", "", "Optional name for a stonk save")
 	version = rootCmd.PersistentFlags().BoolP("version", "v", false, "stonks version")
 	extra = rootCmd.PersistentFlags().BoolP("extra", "e", false, "Include extra pre + post time. (Only works for day)")
+	width = rootCmd.PersistentFlags().IntP("width", "W", 80, "Base width of the graph")
 
 	rootCmd.Execute()
 }

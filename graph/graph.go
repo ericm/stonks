@@ -46,7 +46,7 @@ func GenerateGraph(chart *api.Chart, width int, height int, chartTheme ChartThem
 		colour = 91
 	}
 	info := fmt.Sprintf(
-		"\n┃\033[95m %s | \033[%dm%s %s (%s%% | %s)\033[95m on %s | Prev: %s | %s \033[0m",
+		"\n┃\033[95m %s | \033[%dm%s %s (%s%% | %s)\033[95m on %s | ",
 		chart.Ticker,
 		colour,
 		chart.Close.StringFixed(2),
@@ -54,9 +54,19 @@ func GenerateGraph(chart *api.Chart, width int, height int, chartTheme ChartThem
 		chart.Change.StringFixed(2),
 		chart.ChangeVal.StringFixed(2),
 		chart.End.Time().Format(dateFormat),
-		chart.Prev.StringFixed(2),
-		chart.Exchange,
 	)
+	if len(info) > width {
+		info += fmt.Sprintf(
+			"%s \033[0m",
+			chart.Exchange,
+		)
+	} else {
+		info += fmt.Sprintf(
+			"Prev: %s | %s \033[0m",
+			chart.Prev.StringFixed(2),
+			chart.Exchange,
+		)
+	}
 check:
 	if len(info) < width+maxSize+24 {
 		info += " "
