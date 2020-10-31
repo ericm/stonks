@@ -42,6 +42,17 @@ func GenerateGraph(chart *api.Chart, width int, height int, chartTheme ChartThem
 	if chart.Length < width/5 {
 		chart.Length = width / 3
 	}
+	if chart.Length > width {
+		mod := 2 * (chart.Length / width)
+		chartTemp := make([]*api.Bar, 0)
+		for i, bar := range chart.Bars {
+			if (i+1)%mod == 0 {
+				chartTemp = append(chartTemp, bar)
+			}
+		}
+		chart.Bars = chartTemp
+		chart.Length = len(chartTemp)
+	}
 	if chart.Change.IsNegative() {
 		colour = 91
 	}
@@ -110,7 +121,8 @@ check:
 		}
 		newX := x * spacing
 		if newX >= width {
-			newX--
+			newX = width - 1
+			last = nil
 		}
 		matrix[y][newX] = bar
 		bar.Y = y
