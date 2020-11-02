@@ -9,6 +9,8 @@ RUN go install github.com/ericm/stonks/stonks.icu
 
 FROM alpine
 
+RUN apk add –no-cache tzdata
+
 WORKDIR /bin
 
 COPY --from=build /go/bin/stonks.icu ./stonks
