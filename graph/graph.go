@@ -3,6 +3,7 @@ package graph
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/ericm/stonks/api"
 	"github.com/shopspring/decimal"
@@ -33,7 +34,7 @@ func borderHorizontal(out *string, width int) {
 }
 
 // GenerateGraph with ASCII graph with ANSI escapes
-func GenerateGraph(chart *api.Chart, width int, height int, chartTheme ChartTheme) (string, error) {
+func GenerateGraph(chart *api.Chart, width int, height int, chartTheme ChartTheme, timezone *time.Location) (string, error) {
 	out := "┏"
 	maxSize := len(strings.Split(chart.High.String(), ".")[0]) + 3
 	borderHorizontal(&out, width+maxSize+3)
@@ -228,7 +229,7 @@ retryFooter:
 			if chart.End.Unix()-chart.Start.Unix() > 86400 {
 				format = dayFormat
 			}
-			t := bar.Timestamp.Time().Format(format)
+			t := bar.Timestamp.Time().In(timezone).Format(format)
 			if lastLen > 0 {
 				for _i := 0; _i < diff-len(t); _i++ {
 					footer += " "

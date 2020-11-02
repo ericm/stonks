@@ -149,7 +149,7 @@ func main() {
 						fmt.Println(err.Error())
 						continue
 					}
-					g, _ := graph.GenerateGraph(chart, *width, viper.GetInt("config.favourites_height"), chartTheme)
+					g, _ := graph.GenerateGraph(chart, *width, viper.GetInt("config.favourites_height"), chartTheme, time.Local)
 					fmt.Print(g)
 				}
 			}
@@ -165,7 +165,7 @@ func main() {
 					fmt.Println(err.Error())
 					os.Exit(1)
 				}
-				g, _ := graph.GenerateGraph(chart, *width, viper.GetInt("config.standalone_height"), chartTheme)
+				g, _ := graph.GenerateGraph(chart, *width, viper.GetInt("config.standalone_height"), chartTheme, time.Local)
 				fmt.Print(g)
 			}
 		},
