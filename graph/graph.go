@@ -40,7 +40,7 @@ func GenerateBraille(chart *api.Chart, width int, height int) string {
 
 	ran := chart.High.Sub(chart.Low)
 	wif := 159
-	yScale := 5.0
+	yScale := 4.2
 
 	xScale := float64(wif) / float64(chart.Length)
 
