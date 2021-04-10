@@ -44,8 +44,6 @@ func GenerateBraille(chart *api.Chart, width int, height int) string {
 
 	xScale := float64(wif) / float64(chart.Length)
 
-	println(chart.Length)
-
 	canvas := drawille.NewCanvas()
 
 	lastX := -1.0
