@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ericm/stonks/api"
+	"github.com/exrook/drawille-go"
 	"github.com/shopspring/decimal"
 )
 
@@ -25,6 +26,8 @@ const (
 	DotTheme
 	// IconTheme is the icon chart theme
 	IconTheme
+	// Braille theme
+	Braille
 )
 
 func borderHorizontal(out *string, width int) {
@@ -33,71 +36,55 @@ func borderHorizontal(out *string, width int) {
 	}
 }
 
-// GenerateGraph with ASCII graph with ANSI escapes
-func GenerateGraph(chart *api.Chart, width int, height int, chartTheme ChartTheme, timezone *time.Location) (string, error) {
-	out := "┏"
-	maxSize := len(strings.Split(chart.High.String(), ".")[0]) + 3
-	borderHorizontal(&out, width+maxSize+3)
-	out += "┓"
-	colour := 92
-	if chart.Length < width/5 {
-		chart.Length = width / 3
-	}
-	if chart.Length > width {
-		mod := 2 * (chart.Length / width)
-		chartTemp := make([]*api.Bar, 0)
-		for i, bar := range chart.Bars {
-			if (i+1)%mod == 0 {
-				chartTemp = append(chartTemp, bar)
-			}
+func GenerateBraille(chart *api.Chart, width int, height int) string {
+
+	ran := chart.High.Sub(chart.Low)
+	wif := 159
+	yScale := 5.0
+
+	xScale := float64(wif) / float64(chart.Length)
+
+	println(chart.Length)
+
+	canvas := drawille.NewCanvas()
+
+	lastX := -1.0
+	lastY := -1.0
+
+	for x, bar := range chart.Bars {
+
+		xf := float64(x)
+
+		y := height - int(bar.Current.Sub(chart.Low).Div(ran).Mul(
+			decimal.NewFromInt((int64(height)))).Floor().IntPart())
+
+		yf := float64(y)
+
+		if lastX != -1 {
+
+			canvas.DrawLine(lastX*xScale, lastY*yScale, xf*xScale, yf*yScale)
+
 		}
-		chart.Bars = chartTemp
-		chart.Length = len(chartTemp)
+
+		lastX = xf
+		lastY = yf
+
 	}
-	if chart.Change.IsNegative() {
-		colour = 91
-	}
-	info := fmt.Sprintf(
-		"\n┃\033[95m %s | \033[%dm%s %s (%s%% | %s)\033[95m on %s | ",
-		chart.Ticker,
-		colour,
-		chart.Close.StringFixed(2),
-		chart.Currency,
-		chart.Change.StringFixed(2),
-		chart.ChangeVal.StringFixed(2),
-		chart.End.Time().Format(dateFormat),
-	)
-	if len(info) > width {
-		info += fmt.Sprintf(
-			"%s \033[0m",
-			chart.Exchange,
-		)
-	} else {
-		info += fmt.Sprintf(
-			"Prev: %s | %s \033[0m",
-			chart.Prev.StringFixed(2),
-			chart.Exchange,
-		)
-	}
-check:
-	if len(info) < width+maxSize+24 {
-		info += " "
-		goto check
-	}
-	info += "┃\n┣"
-	out += info
-	borderHorizontal(&out, width+maxSize+3)
-	out += "┫"
+
+	return canvas.String()
+}
+
+func generateMatrix(chart *api.Chart, width int, height int, chartTheme ChartTheme, spacing int) [][]*api.Bar {
+	ran := chart.High.Sub(chart.Low)
 	matrix := make([][]*api.Bar, height)
 	for i := range matrix {
 		matrix[i] = make([]*api.Bar, width)
 	}
-	ran := chart.High.Sub(chart.Low)
-	spacing := (width) / (chart.Length)
+
 	if spacing == 0 {
 		spacing = 3
 	}
-	out += "\n"
+
 	var last *api.Bar
 	var (
 		upChar   = "╱"
@@ -186,27 +173,137 @@ check:
 		}
 		last = bar
 	}
-	increment := ran.Div(decimal.NewFromInt(int64(height)))
-	for i, slc := range matrix {
-		out += "┃"
-		price := chart.High.Sub(increment.Mul(decimal.NewFromInt(int64(i)))).StringFixed(2)
-	checkLen:
-		if len(price) < maxSize {
-			price = " " + price
-			goto checkLen
-		}
-		out += price
-		out += "│\033[92m"
-		for _, ptr := range slc {
-			if ptr != nil {
-				out += ptr.Char
-			} else {
-				out += " "
+
+	return matrix
+}
+
+// GenerateGraph with ASCII graph with ANSI escapes
+func GenerateGraph(chart *api.Chart, width int, height int, chartTheme ChartTheme, timezone *time.Location) (string, error) {
+	ran := chart.High.Sub(chart.Low)
+
+	maxSize := len(strings.Split(chart.High.String(), ".")[0]) + 3
+
+	spacing := (width) / (chart.Length)
+
+	if spacing == 0 {
+		spacing = 3
+	}
+
+	out := "┏"
+
+	borderHorizontal(&out, width+maxSize+3)
+	out += "┓"
+	colour := 92
+	if chart.Length < width/5 {
+		chart.Length = width / 3
+	}
+	if chart.Length > width {
+		mod := 2 * (chart.Length / width)
+		chartTemp := make([]*api.Bar, 0)
+		for i, bar := range chart.Bars {
+			if (i+1)%mod == 0 {
+				chartTemp = append(chartTemp, bar)
 			}
 		}
-		out += "\033[0m┃"
-		out += "\n"
+		chart.Bars = chartTemp
+		chart.Length = len(chartTemp)
 	}
+	if chart.Change.IsNegative() {
+		colour = 91
+	}
+	info := fmt.Sprintf(
+		"\n┃\033[95m %s | \033[%dm%s %s (%s%% | %s)\033[95m on %s | ",
+		chart.Ticker,
+		colour,
+		chart.Close.StringFixed(2),
+		chart.Currency,
+		chart.Change.StringFixed(2),
+		chart.ChangeVal.StringFixed(2),
+		chart.End.Time().Format(dateFormat),
+	)
+	if len(info) > width {
+		info += fmt.Sprintf(
+			"%s \033[0m",
+			chart.Exchange,
+		)
+	} else {
+		info += fmt.Sprintf(
+			"Prev: %s | %s \033[0m",
+			chart.Prev.StringFixed(2),
+			chart.Exchange,
+		)
+	}
+
+check:
+	if len(info) < width+maxSize+24 {
+		info += " "
+		goto check
+	}
+	info += "┃\n┣"
+	out += info
+	borderHorizontal(&out, width+maxSize+3)
+
+	out += "┫"
+
+	increment := ran.Div(decimal.NewFromInt(int64(height)))
+	out += "\n"
+
+	if chartTheme == Braille {
+		splitCanvas := strings.Split(GenerateBraille(chart, width, height), "\n")
+
+		for i, split := range splitCanvas {
+
+			if len(split) == 0 {
+				break
+			}
+
+			out += "┃"
+			price := chart.High.Sub(increment.Mul(decimal.NewFromInt(int64(i)))).StringFixed(2)
+		checkLen:
+			if len(price) < maxSize {
+				price = " " + price
+				goto checkLen
+			}
+			out += price
+			out += "│\033[92m"
+
+			for _, ch := range split {
+
+				out += string(ch)
+			}
+
+			out += "\033[0m┃"
+			out += "\n"
+		}
+	} else {
+
+		matrix := generateMatrix(chart, width, height, chartTheme, spacing)
+
+		for i, slc := range matrix {
+			out += "┃"
+			price := chart.High.Sub(increment.Mul(decimal.NewFromInt(int64(i)))).StringFixed(2)
+		checkLen2:
+			if len(price) < maxSize {
+				price = " " + price
+				goto checkLen2
+			}
+			out += price
+			out += "│\033[92m"
+			for _, ptr := range slc {
+				if ptr != nil {
+					out += ptr.Char
+				} else {
+					out += " "
+				}
+			}
+			out += "\033[0m┃"
+			out += "\n"
+		}
+
+	}
+
+	//
+
 	out += "┣"
 	borderHorizontal(&out, width+maxSize+3)
 	out += "┫\n"
@@ -254,4 +351,5 @@ checkFooter:
 	borderHorizontal(&out, width+maxSize+3)
 	out += "┛\n"
 	return out, nil
+
 }
