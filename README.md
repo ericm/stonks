@@ -31,11 +31,11 @@ Binaries are now available for Windows, MacOSX and Linux under each [release](ht
 
 ## [Online installationless usage (via curl)](http://stonks.icu)
 
-You can now access basic stock graphs for passed stock tickers via the stonks HTTP client (stonks.icu).
+You can now access basic stock graphs for passed stock tickers via the stonks HTTPS client (https://stonks.icu).
 
 Try it:
 ```
-$ curl stonks.icu/amd/ba
+$ curl -L stonks.icu/amd/ba
 ```
 
 ## Usage
