@@ -148,7 +148,7 @@ wtf:
         left: 0
         height: 2
         width: 3
-      refreshinterval: 10
+      refreshInterval: 10
       title: "🤖 Tech"
     financial:
       type: cmdrunner
@@ -160,5 +160,5 @@ wtf:
         left: 0
         height: 2
         width: 3
-      refreshinterval: 10
+      refreshInterval: 10
 ```
