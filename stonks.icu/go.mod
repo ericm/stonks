@@ -4,14 +4,14 @@ go 1.14
 
 require (
 	github.com/dsnet/compress v0.0.1 // indirect
-	github.com/ericm/stonks v1.0.9
+	github.com/ericm/stonks v1.0.10
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/golang/snappy v0.0.2 // indirect
 	github.com/magiconair/properties v1.8.4 // indirect
 	github.com/mholt/archiver v3.1.1+incompatible // indirect
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
 	github.com/nwaples/rardecode v1.1.0 // indirect
-	github.com/oschwald/geoip2-golang v1.4.0 // indirect
+	github.com/oschwald/geoip2-golang v1.4.0
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/pierrec/lz4 v2.6.0+incompatible // indirect
 	github.com/piquette/finance-go v1.0.0
