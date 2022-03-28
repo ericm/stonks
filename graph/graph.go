@@ -28,7 +28,7 @@ const (
 )
 
 func borderHorizontal(out *string, width int) {
-	for _i := 0; _i < width-2; _i++ {
+	for _i := 0; _i <= width; _i++ {
 		*out += "━"
 	}
 }
@@ -36,8 +36,11 @@ func borderHorizontal(out *string, width int) {
 // GenerateGraph with ASCII graph with ANSI escapes
 func GenerateGraph(chart *api.Chart, width int, height int, chartTheme ChartTheme, timezone *time.Location) (string, error) {
 	out := "┏"
-	maxSize := len(strings.Split(chart.High.String(), ".")[0]) + 3
-	borderHorizontal(&out, width+maxSize+3)
+	maxSize := len(strings.Split(chart.High.String(), ".")[0]) + 3 // Add 3 for the dot and precision 2.
+	if maxSize < 7 {
+		maxSize += 7 % maxSize
+	}
+	borderHorizontal(&out, width+maxSize)
 	out += "┓"
 	colour := 92
 	if chart.Length < width/5 {
@@ -58,7 +61,7 @@ func GenerateGraph(chart *api.Chart, width int, height int, chartTheme ChartThem
 		colour = 91
 	}
 	info := fmt.Sprintf(
-		"\n┃\033[95m %s | \033[%dm%s %s (%s%% | %s)\033[95m on %s | ",
+		"\n┃\033[95m %5s | \033[%dm%s %s (%s%% | %s)\033[95m on %s | ",
 		chart.Ticker,
 		colour,
 		chart.Close.StringFixed(2),
@@ -86,7 +89,7 @@ check:
 	}
 	info += "┃\n┣"
 	out += info
-	borderHorizontal(&out, width+maxSize+3)
+	borderHorizontal(&out, width+maxSize)
 	out += "┫"
 	matrix := make([][]*api.Bar, height)
 	for i := range matrix {
@@ -208,7 +211,7 @@ check:
 		out += "\n"
 	}
 	out += "┣"
-	borderHorizontal(&out, width+maxSize+3)
+	borderHorizontal(&out, width+maxSize)
 	out += "┫\n"
 	footer := "┃"
 incFooter:
@@ -251,7 +254,7 @@ checkFooter:
 	footer += "┃"
 	out += footer
 	out += "\n┗"
-	borderHorizontal(&out, width+maxSize+3)
+	borderHorizontal(&out, width+maxSize)
 	out += "┛\n"
 	return out, nil
 }
