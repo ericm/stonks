@@ -33,33 +33,18 @@ func borderHorizontal(out *string, width int) {
 	}
 }
 
-// GenerateGraph with ASCII graph with ANSI escapes
-func GenerateGraph(chart *api.Chart, width int, height int, chartTheme ChartTheme, timezone *time.Location) (string, error) {
+// infoHeader builds the contents of the top part of the graph,
+// where ticker details are found
+func infoHeader(chart *api.Chart, width int, maxSize int) string {
 	out := "┏"
-	maxSize := len(strings.Split(chart.High.String(), ".")[0]) + 3 // Add 3 for the dot and precision 2.
-	if maxSize < 7 {
-		maxSize += 7 % maxSize
-	}
 	borderHorizontal(&out, width+maxSize)
 	out += "┓"
+
 	colour := 92
-	if chart.Length < width/5 {
-		chart.Length = width / 3
-	}
-	if chart.Length > width {
-		mod := 2 * (chart.Length / width)
-		chartTemp := make([]*api.Bar, 0)
-		for i, bar := range chart.Bars {
-			if (i+1)%mod == 0 {
-				chartTemp = append(chartTemp, bar)
-			}
-		}
-		chart.Bars = chartTemp
-		chart.Length = len(chartTemp)
-	}
 	if chart.Change.IsNegative() {
 		colour = 91
 	}
+
 	info := fmt.Sprintf(
 		"\n┃\033[95m %5s | \033[%dm%s %s (%s%% | %s)\033[95m on %s | ",
 		chart.Ticker,
@@ -90,7 +75,29 @@ check:
 	info += "┃\n┣"
 	out += info
 	borderHorizontal(&out, width+maxSize)
-	out += "┫"
+	out += "┫\n"
+
+	return out
+}
+
+// chartArea renders the different bars in the chart along with
+// relevant price levels and returns it as a string
+func chartArea(chart *api.Chart, width int, height int, maxSize int, chartTheme ChartTheme) string {
+	if chart.Length < width/5 {
+		chart.Length = width / 3
+	}
+	if chart.Length > width {
+		mod := 2 * (chart.Length / width)
+		chartTemp := make([]*api.Bar, 0)
+		for i, bar := range chart.Bars {
+			if (i+1)%mod == 0 {
+				chartTemp = append(chartTemp, bar)
+			}
+		}
+		chart.Bars = chartTemp
+		chart.Length = len(chartTemp)
+	}
+
 	matrix := make([][]*api.Bar, height)
 	for i := range matrix {
 		matrix[i] = make([]*api.Bar, width)
@@ -100,7 +107,7 @@ check:
 	if spacing == 0 {
 		spacing = 3
 	}
-	out += "\n"
+
 	var last *api.Bar
 	var (
 		upChar   = "╱"
@@ -190,6 +197,8 @@ check:
 		last = bar
 	}
 	increment := ran.Div(decimal.NewFromInt(int64(height)))
+
+	out := ""
 	for i, slc := range matrix {
 		out += "┃"
 		price := chart.High.Sub(increment.Mul(decimal.NewFromInt(int64(i)))).StringFixed(2)
@@ -210,9 +219,17 @@ check:
 		out += "\033[0m┃"
 		out += "\n"
 	}
-	out += "┣"
+
+	return out
+}
+
+// timeAxisFooter builds the bottom part of the graph, where time marks
+// indicate when the prices took place, and returns it as a string
+func timeAxisFooter(chart *api.Chart, width int, maxSize int, timezone *time.Location) string {
+	out := "┣"
 	borderHorizontal(&out, width+maxSize)
 	out += "┫\n"
+
 	footer := "┃"
 incFooter:
 	if len(footer) < maxSize+4 {
@@ -223,6 +240,12 @@ incFooter:
 	if mod < 3 {
 		mod = width / 10
 	}
+
+	spacing := (width) / (chart.Length)
+	if spacing == 0 {
+		spacing = 3
+	}
+
 retryFooter:
 	diff := mod * spacing
 	lastLen := 0
@@ -256,5 +279,20 @@ checkFooter:
 	out += "\n┗"
 	borderHorizontal(&out, width+maxSize)
 	out += "┛\n"
+
+	return out
+}
+
+// GenerateGraph with ASCII graph with ANSI escapes
+func GenerateGraph(chart *api.Chart, width int, height int, chartTheme ChartTheme, timezone *time.Location) (string, error) {
+	maxSize := len(strings.Split(chart.High.String(), ".")[0]) + 3 // Add 3 for the dot and precision 2.
+	if maxSize < 7 {
+		maxSize += 7 % maxSize
+	}
+
+	out := infoHeader(chart, width, maxSize)
+	out += chartArea(chart, width, height, maxSize, chartTheme)
+	out += timeAxisFooter(chart, width, maxSize, timezone)
+
 	return out, nil
 }
