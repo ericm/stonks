@@ -34,17 +34,13 @@ func borderHorizontal(width int) string {
 // infoHeader builds the contents of the top part of the graph,
 // where ticker details are found
 func infoHeader(chart *api.Chart, width int, maxSize int) string {
-	out := "┏"
-	out += borderHorizontal(width + maxSize + 1)
-	out += "┓"
-
 	colour := 92
 	if chart.Change.IsNegative() {
 		colour = 91
 	}
 
 	info := fmt.Sprintf(
-		"\n┃\033[95m %5s | \033[%dm%s %s (%s%% | %s)\033[95m on %s | ",
+		"\033[95m %5s |\033[%dm %s %s (%s%% | %s)\033[95m on %s | ",
 		chart.Ticker,
 		colour,
 		chart.Close.StringFixed(2),
@@ -53,6 +49,7 @@ func infoHeader(chart *api.Chart, width int, maxSize int) string {
 		chart.ChangeVal.StringFixed(2),
 		chart.End.Time().Format(dateFormat),
 	)
+
 	if len(info) > width {
 		info += fmt.Sprintf(
 			"%s \033[0m",
@@ -65,17 +62,17 @@ func infoHeader(chart *api.Chart, width int, maxSize int) string {
 			chart.Exchange,
 		)
 	}
-check:
-	if len(info) < width+maxSize+24 {
-		info += " "
-		goto check
-	}
-	info += "┃\n┣"
-	out += info
-	out += borderHorizontal(width + maxSize + 1)
-	out += "┫\n"
 
-	return out
+	// add padding to info section so that it fills the total graph width
+	// total width = first column width + column separator (|) + width + 19 special formatting chars (not displayed)
+	padFmt := fmt.Sprintf("%%-%ds", maxSize+1+width+19)
+	info = fmt.Sprintf(padFmt, info)
+
+	var out strings.Builder
+	out.WriteString("┏" + borderHorizontal(width+maxSize+1) + "┓\n")
+	out.WriteString("┃" + info + "┃\n")
+	out.WriteString("┣" + borderHorizontal(width+maxSize+1) + "┫\n")
+	return out.String()
 }
 
 // chartArea renders the different bars in the chart along with
