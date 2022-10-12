@@ -27,17 +27,15 @@ const (
 	IconTheme
 )
 
-func borderHorizontal(out *string, width int) {
-	for _i := 0; _i <= width; _i++ {
-		*out += "━"
-	}
+func borderHorizontal(width int) string {
+	return strings.Repeat("━", width)
 }
 
 // infoHeader builds the contents of the top part of the graph,
 // where ticker details are found
 func infoHeader(chart *api.Chart, width int, maxSize int) string {
 	out := "┏"
-	borderHorizontal(&out, width+maxSize)
+	out += borderHorizontal(width + maxSize + 1)
 	out += "┓"
 
 	colour := 92
@@ -74,7 +72,7 @@ check:
 	}
 	info += "┃\n┣"
 	out += info
-	borderHorizontal(&out, width+maxSize)
+	out += borderHorizontal(width + maxSize + 1)
 	out += "┫\n"
 
 	return out
@@ -227,7 +225,7 @@ func chartArea(chart *api.Chart, width int, height int, maxSize int, chartTheme 
 // indicate when the prices took place, and returns it as a string
 func timeAxisFooter(chart *api.Chart, width int, maxSize int, timezone *time.Location) string {
 	out := "┣"
-	borderHorizontal(&out, width+maxSize)
+	out += borderHorizontal(width + maxSize + 1)
 	out += "┫\n"
 
 	footer := "┃"
@@ -277,7 +275,7 @@ checkFooter:
 	footer += "┃"
 	out += footer
 	out += "\n┗"
-	borderHorizontal(&out, width+maxSize)
+	out += borderHorizontal(width + maxSize + 1)
 	out += "┛\n"
 
 	return out
