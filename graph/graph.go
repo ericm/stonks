@@ -81,29 +81,31 @@ func chartArea(chart *api.Chart, width int, height int, maxSize int, chartTheme 
 	if chart.Length < width/5 {
 		chart.Length = width / 3
 	}
+
+	// sample bars in the chart if they all don't fit in the graph's width
 	if chart.Length > width {
 		mod := 2 * (chart.Length / width)
-		chartTemp := make([]*api.Bar, 0)
+		barsTemp := make([]*api.Bar, 0)
 		for i, bar := range chart.Bars {
-			if (i+1)%mod == 0 {
-				chartTemp = append(chartTemp, bar)
+			if i%mod == 0 {
+				barsTemp = append(barsTemp, bar)
 			}
 		}
-		chart.Bars = chartTemp
-		chart.Length = len(chartTemp)
+		chart.Bars = barsTemp
+		chart.Length = len(barsTemp)
 	}
 
 	matrix := make([][]*api.Bar, height)
 	for i := range matrix {
 		matrix[i] = make([]*api.Bar, width)
 	}
+
 	ran := chart.High.Sub(chart.Low)
-	spacing := (width) / (chart.Length)
+	spacing := width / chart.Length
 	if spacing == 0 {
 		spacing = 3
 	}
 
-	var last *api.Bar
 	var (
 		upChar   = "╱"
 		flatChar = "─"
@@ -118,6 +120,8 @@ func chartArea(chart *api.Chart, width int, height int, maxSize int, chartTheme 
 		flatChar = "❚"
 		downChar = "⬇"
 	}
+
+	var last *api.Bar
 	for x, bar := range chart.Bars {
 		bar.Char = flatChar
 		y := height - int(bar.Current.Sub(chart.Low).Div(ran).Mul(
@@ -125,19 +129,20 @@ func chartArea(chart *api.Chart, width int, height int, maxSize int, chartTheme 
 		if y >= height {
 			y--
 		}
+
 		newX := x * spacing
 		if newX >= width {
 			newX = width - 1
 			last = nil
 		}
+
 		matrix[y][newX] = bar
 		bar.Y = y
 		if last != nil {
-			next := last.Y - bar.Y
 			var char string
 			currY := last.Y
 			switch {
-			case next > 0:
+			case last.Y > bar.Y:
 				char = upChar
 				bar.Char = char
 				for i := 0; i < spacing-1; i++ {
@@ -146,7 +151,7 @@ func chartArea(chart *api.Chart, width int, height int, maxSize int, chartTheme 
 						matrix[currY][i+((x-1)*spacing)+1] = &api.Bar{Char: char}
 					}
 				}
-			case next < 0:
+			case last.Y < bar.Y:
 				char = downChar
 				bar.Char = char
 				for i := 0; i < spacing-1; i++ {
@@ -155,7 +160,7 @@ func chartArea(chart *api.Chart, width int, height int, maxSize int, chartTheme 
 						matrix[currY][i+((x-1)*spacing)+1] = &api.Bar{Char: char}
 					}
 				}
-			case next == 0:
+			case last.Y == bar.Y:
 				char = flatChar
 				last.Char = char
 				for i := 0; i < spacing-1; i++ {
@@ -191,31 +196,33 @@ func chartArea(chart *api.Chart, width int, height int, maxSize int, chartTheme 
 		}
 		last = bar
 	}
+
 	increment := ran.Div(decimal.NewFromInt(int64(height)))
 
-	out := ""
-	for i, slc := range matrix {
-		out += "┃"
+	var out strings.Builder
+	for i, line := range matrix {
 		price := chart.High.Sub(increment.Mul(decimal.NewFromInt(int64(i)))).StringFixed(2)
-	checkLen:
-		if len(price) < maxSize {
-			price = " " + price
-			goto checkLen
-		}
-		out += price
-		out += "│\033[92m"
-		for _, ptr := range slc {
-			if ptr != nil {
-				out += ptr.Char
+
+		// left-pad the price column to right-justify prices
+		padFmt := fmt.Sprintf("%%%ds", maxSize)
+		price = fmt.Sprintf(padFmt, price)
+
+		out.WriteString("┃")
+		out.WriteString(price)
+		out.WriteString("│\033[92m")
+
+		for _, char := range line {
+			if char != nil {
+				out.WriteString(char.Char)
 			} else {
-				out += " "
+				out.WriteString(" ")
 			}
 		}
-		out += "\033[0m┃"
-		out += "\n"
+
+		out.WriteString("\033[0m┃\n")
 	}
 
-	return out
+	return out.String()
 }
 
 // timeAxisFooter builds the bottom part of the graph, where time marks
