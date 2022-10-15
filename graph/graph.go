@@ -27,8 +27,19 @@ const (
 	IconTheme
 )
 
-func borderHorizontal(width int) string {
-	return strings.Repeat("━", width)
+// GenerateGraph with ASCII graph with ANSI escapes
+func GenerateGraph(chart *api.Chart, width int, height int, chartTheme ChartTheme, timezone *time.Location) (string, error) {
+	maxSize := len(strings.Split(chart.High.String(), ".")[0]) + 3 // Add 3 for the dot and precision 2.
+	if maxSize < 7 {
+		maxSize += 7 % maxSize
+	}
+
+	var out strings.Builder
+	out.WriteString(infoHeader(chart, width, maxSize))
+	out.WriteString(chartArea(chart, width, height, maxSize, chartTheme))
+	out.WriteString(timeAxisFooter(chart, width, maxSize, timezone))
+
+	return out.String(), nil
 }
 
 // infoHeader builds the contents of the top part of the graph,
@@ -65,8 +76,7 @@ func infoHeader(chart *api.Chart, width int, maxSize int) string {
 
 	// add padding to info section so that it fills the total graph width
 	// total width = first column width + column separator (|) + width + 19 special formatting chars (not displayed)
-	padFmt := fmt.Sprintf("%%-%ds", maxSize+1+width+19)
-	info = fmt.Sprintf(padFmt, info)
+	info = padString(info, maxSize+1+width+19, false)
 
 	var out strings.Builder
 	out.WriteString("┏" + borderHorizontal(width+maxSize+1) + "┓\n")
@@ -204,8 +214,7 @@ func chartArea(chart *api.Chart, width int, height int, maxSize int, chartTheme 
 		price := chart.High.Sub(increment.Mul(decimal.NewFromInt(int64(i)))).StringFixed(2)
 
 		// left-pad the price column to right-justify prices
-		padFmt := fmt.Sprintf("%%%ds", maxSize)
-		price = fmt.Sprintf(padFmt, price)
+		price = padString(price, maxSize, true)
 
 		out.WriteString("┃")
 		out.WriteString(price)
@@ -254,9 +263,7 @@ func timeAxisFooter(chart *api.Chart, width int, maxSize int, timezone *time.Loc
 		for i, bar := range chart.Bars {
 			if i%mod == 0 {
 				t := bar.Timestamp.Time().In(timezone).Format(format)
-
-				padFmt := fmt.Sprintf("%%-%ds", diff)
-				t = fmt.Sprintf(padFmt, t)
+				t = padString(t, diff, false)
 
 				footer += t
 			}
@@ -271,8 +278,7 @@ func timeAxisFooter(chart *api.Chart, width int, maxSize int, timezone *time.Loc
 		mod++
 	}
 
-	padFmt := fmt.Sprintf("%%-%ds", maxSize+1+width)
-	footer = fmt.Sprintf(padFmt, footer)
+	footer = padString(footer, maxSize+1+width, false)
 
 	var out strings.Builder
 	out.WriteString("┣" + borderHorizontal(width+maxSize+1) + "┫\n")
@@ -282,16 +288,17 @@ func timeAxisFooter(chart *api.Chart, width int, maxSize int, timezone *time.Loc
 	return out.String()
 }
 
-// GenerateGraph with ASCII graph with ANSI escapes
-func GenerateGraph(chart *api.Chart, width int, height int, chartTheme ChartTheme, timezone *time.Location) (string, error) {
-	maxSize := len(strings.Split(chart.High.String(), ".")[0]) + 3 // Add 3 for the dot and precision 2.
-	if maxSize < 7 {
-		maxSize += 7 % maxSize
+func borderHorizontal(width int) string {
+	return strings.Repeat("━", width)
+}
+
+// padStrings pads a string with spaces until it fills the given width.
+// If left is true, spaces are added at the beginning of the string
+func padString(s string, width int, left bool) string {
+	padFmt := fmt.Sprintf("%%-%ds", width)
+	if left {
+		padFmt = fmt.Sprintf("%%%ds", width)
 	}
 
-	out := infoHeader(chart, width, maxSize)
-	out += chartArea(chart, width, height, maxSize, chartTheme)
-	out += timeAxisFooter(chart, width, maxSize, timezone)
-
-	return out, nil
+	return fmt.Sprintf(padFmt, s)
 }
