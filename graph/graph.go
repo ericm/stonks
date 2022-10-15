@@ -228,61 +228,58 @@ func chartArea(chart *api.Chart, width int, height int, maxSize int, chartTheme 
 // timeAxisFooter builds the bottom part of the graph, where time marks
 // indicate when the prices took place, and returns it as a string
 func timeAxisFooter(chart *api.Chart, width int, maxSize int, timezone *time.Location) string {
-	out := "┣"
-	out += borderHorizontal(width + maxSize + 1)
-	out += "┫\n"
-
-	footer := "┃"
-incFooter:
-	if len(footer) < maxSize+4 {
-		footer += " "
-		goto incFooter
-	}
 	mod := width / chart.Length
 	if mod < 3 {
 		mod = width / 10
 	}
 
-	spacing := (width) / (chart.Length)
+	spacing := width / chart.Length
 	if spacing == 0 {
 		spacing = 3
 	}
 
-retryFooter:
 	diff := mod * spacing
-	lastLen := 0
-	for i, bar := range chart.Bars {
-		if i%mod == 0 {
-			format := timeFormat
-			if chart.End.Unix()-chart.Start.Unix() > 86400 {
-				format = dayFormat
-			}
-			t := bar.Timestamp.Time().In(timezone).Format(format)
-			if lastLen > 0 {
-				for _i := 0; _i < diff-len(t); _i++ {
-					footer += " "
-				}
-			}
-			footer += t
-			lastLen = len(t)
-		}
-	}
-	if len(footer) > width+maxSize+4 {
-		mod++
-		goto retryFooter
-	}
-checkFooter:
-	if len(footer) < width+maxSize+4 {
-		footer += " "
-		goto checkFooter
-	}
-	footer += "┃"
-	out += footer
-	out += "\n┗"
-	out += borderHorizontal(width + maxSize + 1)
-	out += "┛\n"
 
-	return out
+	format := timeFormat
+	if chart.End.Unix()-chart.Start.Unix() > 86400 {
+		format = dayFormat
+	}
+
+	// retry building the footer until a valid one (i.e. one that fits at the bottom of
+	// the graph) is obtained. If the footer is not valid, mod will be increased by 1
+	// and building it will be retried
+	footer := ""
+	for {
+		footer = strings.Repeat(" ", maxSize+1)
+		for i, bar := range chart.Bars {
+			if i%mod == 0 {
+				t := bar.Timestamp.Time().In(timezone).Format(format)
+
+				padFmt := fmt.Sprintf("%%-%ds", diff)
+				t = fmt.Sprintf(padFmt, t)
+
+				footer += t
+			}
+		}
+
+		footer = strings.TrimRight(footer, " ")
+
+		if len(footer) <= maxSize+1+width {
+			break
+		}
+
+		mod++
+	}
+
+	padFmt := fmt.Sprintf("%%-%ds", maxSize+1+width)
+	footer = fmt.Sprintf(padFmt, footer)
+
+	var out strings.Builder
+	out.WriteString("┣" + borderHorizontal(width+maxSize+1) + "┫\n")
+	out.WriteString("┃" + footer + "┃\n")
+	out.WriteString("┗" + borderHorizontal(width+maxSize+1) + "┛\n")
+
+	return out.String()
 }
 
 // GenerateGraph with ASCII graph with ANSI escapes
