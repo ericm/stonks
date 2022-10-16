@@ -15,18 +15,6 @@ const (
 	dayFormat  = "2 Jan"
 )
 
-// ChartTheme to change characters
-type ChartTheme int
-
-const (
-	// LineTheme is the lines chart theme
-	LineTheme ChartTheme = iota
-	// DotTheme is the dots chart theme
-	DotTheme
-	// IconTheme is the icon chart theme
-	IconTheme
-)
-
 // GenerateGraph with ASCII graph with ANSI escapes
 func GenerateGraph(chart *api.Chart, width int, height int, chartTheme ChartTheme, timezone *time.Location) (string, error) {
 	maxSize := len(strings.Split(chart.High.String(), ".")[0]) + 3 // Add 3 for the dot and precision 2.
@@ -116,24 +104,9 @@ func chartArea(chart *api.Chart, width int, height int, maxSize int, chartTheme 
 		spacing = 3
 	}
 
-	var (
-		upChar   = "╱"
-		flatChar = "─"
-		downChar = "╲"
-	)
-	if chartTheme == DotTheme {
-		upChar = "·"
-		flatChar = "·"
-		downChar = "·"
-	} else if chartTheme == IconTheme {
-		upChar = "⬆"
-		flatChar = "❚"
-		downChar = "⬇"
-	}
-
 	var last *api.Bar
 	for x, bar := range chart.Bars {
-		bar.Char = flatChar
+		bar.Char = chartTheme.FlatChar
 		y := height - int(bar.Current.Sub(chart.Low).Div(ran).Mul(
 			decimal.NewFromInt((int64(height)))).Floor().IntPart())
 		if y >= height {
@@ -153,7 +126,7 @@ func chartArea(chart *api.Chart, width int, height int, maxSize int, chartTheme 
 			currY := last.Y
 			switch {
 			case last.Y > bar.Y:
-				char = upChar
+				char = chartTheme.UpChar
 				bar.Char = char
 				for i := 0; i < spacing-1; i++ {
 					currY--
@@ -162,7 +135,7 @@ func chartArea(chart *api.Chart, width int, height int, maxSize int, chartTheme 
 					}
 				}
 			case last.Y < bar.Y:
-				char = downChar
+				char = chartTheme.DownChar
 				bar.Char = char
 				for i := 0; i < spacing-1; i++ {
 					currY++
@@ -171,7 +144,7 @@ func chartArea(chart *api.Chart, width int, height int, maxSize int, chartTheme 
 					}
 				}
 			case last.Y == bar.Y:
-				char = flatChar
+				char = chartTheme.FlatChar
 				last.Char = char
 				for i := 0; i < spacing-1; i++ {
 					matrix[currY][i+((x-1)*spacing)+1] = &api.Bar{Char: char}
