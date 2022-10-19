@@ -104,21 +104,23 @@ func main() {
 				return
 			}
 
-			chartTheme := graph.ChartTheme(viper.GetInt("config.default_theme"))
+			chartThemeType := graph.ChartThemeType(viper.GetInt("config.default_theme"))
 
 			switch *theme {
 			case "line":
-				chartTheme = graph.LineTheme
+				chartThemeType = graph.LineTheme
 			case "dot":
-				chartTheme = graph.DotTheme
+				chartThemeType = graph.DotTheme
 			case "icon":
-				chartTheme = graph.IconTheme
+				chartThemeType = graph.IconTheme
 			default:
 				if len(*theme) > 0 {
 					fmt.Println("Unknown theme, must be \"line\", \"dot\" or \"icon\"")
 					os.Exit(1)
 				}
 			}
+
+			chartTheme := graph.NewChartTheme(chartThemeType)
 
 			if len(args) == 0 {
 				intervalCmd, start, end := parseTimeRange()
