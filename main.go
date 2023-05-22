@@ -26,6 +26,7 @@ var (
 	version *bool
 	extra   *bool
 	width   *int
+	columns *int
 	theme   *string
 	days    *int
 
@@ -121,6 +122,7 @@ func main() {
 			}
 
 			chartTheme := graph.NewChartTheme(chartThemeType)
+			var chartsToPrint []string = []string{}
 
 			if len(args) == 0 {
 				intervalCmd, start, end := parseTimeRange()
@@ -152,7 +154,7 @@ func main() {
 						continue
 					}
 					g, _ := graph.GenerateGraph(chart, *width, viper.GetInt("config.favourites_height"), chartTheme, time.Local)
-					fmt.Print(g)
+					chartsToPrint = append(chartsToPrint, g)
 				}
 			}
 
@@ -168,8 +170,10 @@ func main() {
 					os.Exit(1)
 				}
 				g, _ := graph.GenerateGraph(chart, *width, viper.GetInt("config.standalone_height"), chartTheme, time.Local)
-				fmt.Print(g)
+				chartsToPrint = append(chartsToPrint, g)
 			}
+
+			PrintCharts(&chartsToPrint, *columns)
 		},
 	}
 	interval = rootCmd.PersistentFlags().StringP("interval", "i", "15m", "stonks -i X[m|h] (eg 15m, 5m, 1h, 1d)")
@@ -184,6 +188,7 @@ func main() {
 	version = rootCmd.PersistentFlags().BoolP("version", "v", false, "stonks version")
 	extra = rootCmd.PersistentFlags().BoolP("extra", "e", false, "Include extra pre + post time. (Only works for day)")
 	width = rootCmd.PersistentFlags().IntP("width", "W", 80, "Base width of the graph")
+	columns = rootCmd.PersistentFlags().IntP("columns", "C", 1, "Number of columns")
 
 	rootCmd.Execute()
 }
@@ -229,4 +234,43 @@ func parseTimeRange() (datetime.Interval, *datetime.Datetime, *datetime.Datetime
 		end = datetime.New(&e)
 	}
 	return intervalCmd, start, end
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func PrintCharts(chartsToPrint *[]string, columns int) {
+	var out [][]string
+
+	// Transform chart strings to 2D array with first axis being a chart
+	// and second axis being a line
+	for i := 0; i < len(*chartsToPrint); i++ {
+		out = append(out, strings.Split((*chartsToPrint)[i], "\n"))
+	}
+
+	var builder strings.Builder
+	var start = 0
+	var stop = min(columns, len(*chartsToPrint))
+
+	for start != stop {
+		// Loop over lines of a chart string
+		for j := 0; j < len(out[0]); j++ {
+			// Loop over charts
+			for i := start; i < stop; i++ {
+				builder.WriteString(out[i][j])
+				builder.WriteString("   ")
+			}
+			builder.WriteString("\n")
+		}
+
+		// Move start and stop indices forward. By using min function, we ensure that we do not exceed bounds
+		start = min(start+columns, len(*chartsToPrint))
+		stop = min(stop+columns, len(*chartsToPrint))
+	}
+
+	fmt.Println(builder.String())
 }
