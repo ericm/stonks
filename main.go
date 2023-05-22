@@ -270,5 +270,5 @@ func PrintCharts(chartsToPrint *[]string, columns int) {
 		stop = min(stop+columns, len(*chartsToPrint))
 	}
 
-	fmt.Println(builder.String())
+	fmt.Print(builder.String())
 }
