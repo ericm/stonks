@@ -146,8 +146,6 @@ func main() {
 				}
 				sort.Strings(keys)
 				for _, symbol := range keys {
-					name := favourites[symbol].(string)
-					fmt.Println(name + ":")
 					chart, err := api.GetChart(strings.ReplaceAll(strings.ToUpper(symbol), "_", "."), intervalCmd, start, end, extraCmd)
 					if err != nil {
 						fmt.Println(err.Error())
